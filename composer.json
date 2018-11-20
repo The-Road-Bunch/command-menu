@@ -2,9 +2,6 @@
     "name": "dancmcadams/command-menu",
     "description": "A simple class for command menus",
     "type": "library",
-    "require-dev": {
-        "phpunit/phpunit": "^7.4"
-    },
     "license": "MIT",
     "authors": [
         {
@@ -12,5 +9,22 @@
             "email": "danmcadams@gmail.com"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "CommandMenu\\": "src/CommandMenu"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CommandMenu\\Tests\\": "tests/CommandMenu"
+        }
+    },
+    "require": {
+        "php": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4",
+        "symfony/console": "^4.1",
+        "symfony/var-dumper": "^4.1"
+    }
 }
