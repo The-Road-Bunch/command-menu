@@ -4,6 +4,6 @@
 namespace RoadBunch\CommandMenu\Exception;
 
 
-class DuplicateOptionException extends \Exception
+class SlugNotFoundException extends \Exception
 {
 }

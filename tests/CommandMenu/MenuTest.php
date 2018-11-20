@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 
-namespace CommandMenu\Tests;
+namespace RoadBunch\CommandMenu\Tests;
 
 
-use CommandMenu\Exception\DuplicateOptionException;
-use CommandMenu\Menu;
-use CommandMenu\Option;
+use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\CommandMenu\Menu;
+use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 
 class MenuTest extends TestCase
@@ -20,7 +20,10 @@ class MenuTest extends TestCase
     }
 
     /**
-     * @dataProvider optionProvider
+     * @dataProvider duplicateOptionProvider
+     *
+     * @param Option $optionOne
+     * @param Option $optionTwo
      */
     public function testAddDuplicateOptionThrowsException(Option $optionOne, Option $optionTwo)
     {
@@ -31,7 +34,7 @@ class MenuTest extends TestCase
         $menu->addOption($optionTwo);
     }
 
-    public function optionProvider()
+    public function duplicateOptionProvider()
     {
         // duplicate options
         yield [OptionBuilder::create()->build(), OptionBuilder::create()->build()];

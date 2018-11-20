@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 
-namespace CommandMenu\Tests;
+namespace RoadBunch\CommandMenu\Tests;
 
 
-use CommandMenu\Option;
+use RoadBunch\CommandMenu\Option;
 
 class OptionBuilder
 {
@@ -30,6 +30,6 @@ class OptionBuilder
 
     public function build()
     {
-        return new Option($this->slug, $this->name);
+        return new Option($this->name, $this->slug);
     }
 }

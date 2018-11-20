@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 
-namespace CommandMenu;
+namespace RoadBunch\CommandMenu;
 
 
-use CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 
 class Menu
 {

@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace CommandMenu;
+namespace RoadBunch\CommandMenu;
 
 
 class Option

@@ -1,5 +1,5 @@
 {
-    "name": "dancmcadams/command-menu",
+    "name": "theroadbunch/command-menu",
     "description": "A simple class for command menus",
     "type": "library",
     "license": "MIT",
@@ -11,16 +11,16 @@
     ],
     "autoload": {
         "psr-4": {
-            "CommandMenu\\": "src/CommandMenu"
+            "RoadBunch\\CommandMenu\\": "src/CommandMenu"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CommandMenu\\Tests\\": "tests/CommandMenu"
+            "RoadBunch\\CommandMenu\\Tests\\": "tests/CommandMenu"
         }
     },
     "require": {
-        "php": "^7.0"
+        "php": "^7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.4",
