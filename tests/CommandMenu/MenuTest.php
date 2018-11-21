@@ -1,40 +1,40 @@
 <?php declare(strict_types=1);
 
 
-namespace RoadBunch\CommandMenu\Tests;
+namespace RoadBunch\Tests\CommandMenu;
 
 
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class MenuTest extends TestCase
 {
-    public function testAddOption()
-    {
-        $menu = $this->getMenuSpy();
-        $menu->addOption(OptionBuilder::create()->build());
+    /** @var TestOutput|OutputInterface */
+    protected $output;
+    protected $menu;
 
-        $this->assertCount(1, $menu->getOptions());
+    protected function setUp()
+    {
+        $this->output = new TestOutput();
+        $this->menu   = new Menu($this->output);
     }
 
     /**
      * @dataProvider duplicateOptionProvider
-     *
-     * @param Option $optionOne
-     * @param Option $optionTwo
      */
     public function testAddDuplicateOptionThrowsException(Option $optionOne, Option $optionTwo)
     {
         $this->expectException(DuplicateOptionException::class);
 
-        $menu = new Menu();
+        $menu = new Menu($this->output);
         $menu->addOption($optionOne);
         $menu->addOption($optionTwo);
     }
 
-    public function duplicateOptionProvider()
+    public function duplicateOptionProvider(): \Generator
     {
         // duplicate options
         yield [OptionBuilder::create()->build(), OptionBuilder::create()->build()];
@@ -44,14 +44,34 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withSlug(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
-    private function getMenuSpy()
+    public function testRenderDefaultMenu()
     {
-        return new class extends Menu
-        {
-            public function getOptions(): array
-            {
-                return $this->options;
-            }
-        };
+        $option  = OptionBuilder::create()->withName("Frank")->withSlug('option_frank')->build();
+        $option2 = OptionBuilder::create()->withName("Charlie")->withSlug('option_charlie')->build();
+
+        $menu = new Menu($this->output);
+        $menu->addOption($option);
+        $menu->addOption($option2);
+
+        $menu->render();
+        $output = $this->output->output;
+
+        $this->assertContains($option->name, $output);
+        $this->assertContains($option2->name, $output);
+    }
+
+    public function testQuitOption()
+    {
+        $menu = new Menu($this->output);
+
+        $menu->addQuitOption();
+        $menu->render();
+
+        $this->assertContains('Quit', $this->output->output);
+
+        $this->output->clear();
+        $menu->removeQuitOption();
+        $menu->render();
+        $this->assertNotContains('Quit', $this->output->output);
     }
 }
