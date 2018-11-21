@@ -14,6 +14,7 @@ class MenuTest extends TestCase
 {
     /** @var TestOutput|OutputInterface */
     protected $output;
+    /** @var Menu $menu */
     protected $menu;
 
     protected function setUp()
@@ -29,9 +30,8 @@ class MenuTest extends TestCase
     {
         $this->expectException(DuplicateOptionException::class);
 
-        $menu = new Menu($this->output);
-        $menu->addOption($optionOne);
-        $menu->addOption($optionTwo);
+        $this->menu->addOption($optionOne);
+        $this->menu->addOption($optionTwo);
     }
 
     public function duplicateOptionProvider(): \Generator
@@ -49,11 +49,10 @@ class MenuTest extends TestCase
         $option  = OptionBuilder::create()->withName("Frank")->withSlug('option_frank')->build();
         $option2 = OptionBuilder::create()->withName("Charlie")->withSlug('option_charlie')->build();
 
-        $menu = new Menu($this->output);
-        $menu->addOption($option);
-        $menu->addOption($option2);
+        $this->menu->addOption($option);
+        $this->menu->addOption($option2);
 
-        $menu->render();
+        $this->menu->render();
         $output = $this->output->output;
 
         $this->assertContains($option->name, $output);
@@ -62,16 +61,14 @@ class MenuTest extends TestCase
 
     public function testQuitOption()
     {
-        $menu = new Menu($this->output);
-
-        $menu->addQuitOption();
-        $menu->render();
+        $this->menu->addQuitOption();
+        $this->menu->render();
 
         $this->assertContains('Quit', $this->output->output);
 
         $this->output->clear();
-        $menu->removeQuitOption();
-        $menu->render();
+        $this->menu->removeQuitOption();
+        $this->menu->render();
         $this->assertNotContains('Quit', $this->output->output);
     }
 }
