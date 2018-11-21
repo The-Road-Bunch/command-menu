@@ -11,12 +11,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "RoadBunch\\CommandMenu\\": "src/CommandMenu"
+            "RoadBunch\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "RoadBunch\\CommandMenu\\Tests\\": "tests/CommandMenu"
+            "RoadBunch\\Tests\\": "tests/"
         }
     },
     "require": {

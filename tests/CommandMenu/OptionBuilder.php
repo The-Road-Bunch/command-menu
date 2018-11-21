@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace RoadBunch\CommandMenu\Tests;
+namespace RoadBunch\Tests\CommandMenu;
 
 
 use RoadBunch\CommandMenu\Option;
