@@ -30,11 +30,6 @@ class Menu
         }
     }
 
-    /**
-     * @param Option $option
-     *
-     * @throws DuplicateOptionException
-     */
     private function checkForDuplicates(Option $option)
     {
         if (isset($this->options[$option->label]) || in_array($option->name, $this->options)) {
