@@ -17,6 +17,7 @@ use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class MenuTest
@@ -60,15 +61,29 @@ class MenuTest extends TestCase
 
     public function testRenderDefaultMenu()
     {
-        $option  = OptionBuilder::create()->withName("Frank")->withLabel('option_frank')->build();
-        $option2 = OptionBuilder::create()->withName("Charlie")->withLabel('option_charlie')->build();
+        $optOne = OptionBuilder::create()->withName("option_frank")->withLabel('Frank')->build();
+        $optTwo = OptionBuilder::create()->withName("option_charlie")->withLabel('Charlie')->build();
 
-        $this->menu->addOption($option);
-        $this->menu->addOption($option2);
+        $this->menu->addOption($optOne);
+        $this->menu->addOption($optTwo);
 
         $this->menu->render();
 
-        $this->assertContains($option->name, $this->output->output);
-        $this->assertContains($option2->name, $this->output->output);
+        $this->assertContains($optOne->label, $this->output->output);
+        $this->assertContains($optTwo->label, $this->output->output);
+    }
+
+    public function testMakeSelection()
+    {
+        $optOne = OptionBuilder::create()->withName('option_waitress')->withLabel('The Waitress')->build();
+        $optTwo = OptionBuilder::create()->withName('option_cricket')->withLabel('Cricket')->build();
+
+        $this->menu->addOption($optOne);
+        $this->menu->addOption($optTwo);
+        $this->menu->render();
+
+        $this->assertEquals($optTwo, $this->menu->makeSelection(2));
+        $this->assertEquals($optOne, $this->menu->makeSelection(1));
+        $this->assertNull($this->menu->makeSelection('fake selection'));
     }
 }

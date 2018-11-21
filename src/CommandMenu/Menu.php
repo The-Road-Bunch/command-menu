@@ -23,7 +23,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Menu
 {
-    protected $options = [];
+    protected $options   = [];
+    protected $optionMap = [];
+
+    /** @var OutputInterface $output */
     protected $output;
 
     public function __construct(OutputInterface $output)
@@ -34,19 +37,31 @@ class Menu
     public function addOption(Option $option): void
     {
         $this->checkForDuplicates($option);
-        $this->options[$option->label] = $option->name;
+        $this->options[$option->name] = $option->label;
     }
 
     public function render(): void
     {
-        foreach ($this->options as $option) {
-            $this->output->writeln($option);
+        $count = 1;
+        foreach ($this->options as $name => $label) {
+            $this->output->writeln(sprintf('%s %s', $count, $label));
+            $this->optionMap[$count] = $name;
+            $count++;
         }
     }
 
-    private function checkForDuplicates(Option $option)
+    public function makeSelection($selection): ?Option
     {
-        if (isset($this->options[$option->label]) || in_array($option->name, $this->options)) {
+        if (!empty($this->optionMap[$selection])) {
+            $name = $this->optionMap[$selection];
+            return new Option($name, $this->options[$name]);
+        }
+        return null;
+    }
+
+    private function checkForDuplicates(Option $option): void
+    {
+        if (isset($this->options[$option->name]) || in_array($option->label, $this->options)) {
             throw new DuplicateOptionException();
         }
     }

@@ -8,7 +8,7 @@ use RoadBunch\CommandMenu\Option;
 
 class OptionBuilder
 {
-    protected $name  = 'option-one';
+    protected $name  = 'option_one';
     protected $label = 'Option One';
 
     public static function create()
