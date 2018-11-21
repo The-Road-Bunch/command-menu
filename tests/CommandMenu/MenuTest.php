@@ -58,17 +58,4 @@ class MenuTest extends TestCase
         $this->assertContains($option->name, $output);
         $this->assertContains($option2->name, $output);
     }
-
-    public function testQuitOption()
-    {
-        $this->menu->addQuitOption();
-        $this->menu->render();
-
-        $this->assertContains('Quit', $this->output->output);
-
-        $this->output->clear();
-        $this->menu->removeQuitOption();
-        $this->menu->render();
-        $this->assertNotContains('Quit', $this->output->output);
-    }
 }
