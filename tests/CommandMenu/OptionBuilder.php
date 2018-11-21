@@ -8,8 +8,8 @@ use RoadBunch\CommandMenu\Option;
 
 class OptionBuilder
 {
-    protected $name = 'Option One';
-    protected $slug = 'option-one';
+    protected $name  = 'option-one';
+    protected $label = 'Option One';
 
     public static function create()
     {
@@ -22,14 +22,14 @@ class OptionBuilder
         return $this;
     }
 
-    public function withSlug(string $slug): OptionBuilder
+    public function withLabel(string $label): OptionBuilder
     {
-        $this->slug = $slug;
+        $this->label = $label;
         return $this;
     }
 
     public function build()
     {
-        return new Option($this->name, $this->slug);
+        return new Option($this->name, $this->label);
     }
 }

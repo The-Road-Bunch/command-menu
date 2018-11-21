@@ -12,19 +12,19 @@ class Option
     public $name;
 
     /**
-     * @var string $slug
+     * @var string $label
      */
-    public $slug;
+    public $label;
 
     /**
      * Option constructor.
      *
      * @param string $name
-     * @param string $slug
+     * @param string $label
      */
-    public function __construct(string $name, string $slug)
+    public function __construct(string $name, string $label)
     {
-        $this->name = $name;
-        $this->slug = $slug;
+        $this->name  = $name;
+        $this->label = $label;
     }
 }

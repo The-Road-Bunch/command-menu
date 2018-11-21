@@ -20,7 +20,7 @@ class Menu
     public function addOption(Option $option): void
     {
         $this->checkForDuplicates($option);
-        $this->options[$option->slug] = $option->name;
+        $this->options[$option->label] = $option->name;
     }
 
     public function render(): void
@@ -37,7 +37,7 @@ class Menu
      */
     private function checkForDuplicates(Option $option)
     {
-        if (isset($this->options[$option->slug]) || in_array($option->name, $this->options)) {
+        if (isset($this->options[$option->label]) || in_array($option->name, $this->options)) {
             throw new DuplicateOptionException();
         }
     }

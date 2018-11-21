@@ -38,24 +38,23 @@ class MenuTest extends TestCase
     {
         // duplicate options
         yield [OptionBuilder::create()->build(), OptionBuilder::create()->build()];
-        // same slug, different name
+        // same label, different name
         yield [OptionBuilder::create()->withName(uniqid())->build(), OptionBuilder::create()->build()];
-        // different slug, same name
-        yield [OptionBuilder::create()->withSlug(uniqid())->build(), OptionBuilder::create()->build()];
+        // different label, same name
+        yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
     public function testRenderDefaultMenu()
     {
-        $option  = OptionBuilder::create()->withName("Frank")->withSlug('option_frank')->build();
-        $option2 = OptionBuilder::create()->withName("Charlie")->withSlug('option_charlie')->build();
+        $option  = OptionBuilder::create()->withName("Frank")->withLabel('option_frank')->build();
+        $option2 = OptionBuilder::create()->withName("Charlie")->withLabel('option_charlie')->build();
 
         $this->menu->addOption($option);
         $this->menu->addOption($option2);
 
         $this->menu->render();
-        $output = $this->output->output;
 
-        $this->assertContains($option->name, $output);
-        $this->assertContains($option2->name, $output);
+        $this->assertContains($option->name, $this->output->output);
+        $this->assertContains($option2->name, $this->output->output);
     }
 }
