@@ -83,24 +83,6 @@ class MenuTest extends TestCase
         $this->assertNull($this->menu->makeSelection('fake selection'));
     }
 
-    public function testMenu()
-    {
-        $add    = new Option('add', 'Add User');
-        $rename = new Option('rename', 'Rename User');
-
-        $menu = new Menu($this->output);
-        $menu->addOption($rename);
-        $menu->addOption($add);
-
-        $menu->addOoption('add', 'Add User');
-        $menu->addOoption('rename', 'Rename User');
-
-        $menu->render();
-        $selection = $menu->makeSelection(2);
-
-        $this->assertEquals($add, $selection);
-    }
-
     private function createRandomOptions(int $numOptions)
     {
         $options = [];
