@@ -69,12 +69,7 @@ class MenuTest extends TestCase
     public function testRenderDefaultMenuCreatesNumberedMenu()
     {
         $this->menu->render();
-
-        $counter = new NumberCounter();
-        foreach ($this->options as $option) {
-            $expected = sprintf('%s%s%s', $counter->next(), Menu::DEFAULT_DELIMITER, $option->label);
-            $this->assertContains($expected, $this->output->output);
-        }
+        $this->assertRendersNumberedMenuWithDelimiter(Menu::DEFAULT_DELIMITER);
     }
 
     public function testSetCustomDelimiter()
@@ -83,11 +78,7 @@ class MenuTest extends TestCase
         $this->menu->setOptionDelimiter($delimiter);
         $this->menu->render();
 
-        $counter = new NumberCounter();
-        foreach ($this->options as $option) {
-            $expected = sprintf('%s%s%s', $counter->next(), $delimiter, $option->label);
-            $this->assertContains($expected, $this->output->output);
-        }
+        $this->assertRendersNumberedMenuWithDelimiter($delimiter);
     }
 
     public function testRenderMultipleTimesCreatesSameMenu()
@@ -139,13 +130,19 @@ class MenuTest extends TestCase
         return $options;
     }
 
-    /**
-     * @param Option[] $options
-     */
     private function setMenuOptions($options)
     {
         foreach ($options as $option) {
             $this->menu->addOption($option->name, $option->label);
+        }
+    }
+
+    private function assertRendersNumberedMenuWithDelimiter(string $delimiter): void
+    {
+        $counter = new NumberCounter();
+        foreach ($this->options as $option) {
+            $expected = sprintf('%s%s%s', $counter->next(), $delimiter, $option->label);
+            $this->assertContains($expected, $this->output->output);
         }
     }
 }

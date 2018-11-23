@@ -24,12 +24,11 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Menu
 {
+    /** @var string self::DEFAULT_DELIMITER */
     const DEFAULT_DELIMITER = ') ';
 
-    /** @var Option[] $options */
-    protected $options = [];
-    /** @var Option[] $optionSelectorMap */
-    protected $optionSelectorMap = [];
+    /** @var Option[] $optionMap */
+    protected $optionMap = [];
 
     /** @var OutputInterface $output */
     protected $output;
@@ -37,6 +36,7 @@ class Menu
     /** @var NumberCounter $counter */
     protected $counter;
 
+    /** @var string $delimiter */
     protected $delimiter = self::DEFAULT_DELIMITER;
 
     public function __construct(OutputInterface $output)
@@ -52,38 +52,32 @@ class Menu
 
     public function addOption(string $name, string $label, string $selector = null): void
     {
-        $count = $this->counter->next();
-        $option = new Option($name, $label);
+        $selector = $selector ?? $this->counter->next();
+        $option   = new Option($name, $label);
 
         $this->checkForDuplicates($option);
-
-        $this->options[] = $option;
-        if ($selector) {
-            $this->optionSelectorMap[$selector] = $option;
-        } else {
-            $this->optionSelectorMap[$count] = $option;
-        }
+        $this->optionMap[$selector] = $option;
     }
 
     public function render(): void
     {
-        foreach ($this->options as $option) {
-            $selector = array_search($option, $this->optionSelectorMap);
+        foreach ($this->optionMap as $option) {
+            $selector = array_search($option, $this->optionMap);
             $this->output->writeln(sprintf('%s%s%s', $selector, $this->delimiter, $option->label));
         }
     }
 
     public function makeSelection($selection): ?string
     {
-        if (!empty($this->optionSelectorMap[$selection])) {
-            return $this->optionSelectorMap[$selection]->name;
+        if (!empty($this->optionMap[$selection])) {
+            return $this->optionMap[$selection]->name;
         }
         return null;
     }
 
     private function checkForDuplicates(Option $newOption): void
     {
-        foreach ($this->options as $option) {
+        foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
                 throw new DuplicateOptionException();
             }
