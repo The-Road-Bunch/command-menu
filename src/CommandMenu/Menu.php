@@ -47,15 +47,15 @@ class Menu
 
         $this->checkForDuplicates($option);
         $this->options[] = $option;
+        $this->optionSelectorMap[$this->counter->next()] = $option;
     }
 
     public function render(): void
     {
-        $this->counter->reset();
         foreach ($this->options as $option) {
-            $count = $this->counter->next();
-            $this->output->writeln(sprintf('%s %s', $count, $option->label));
-            $this->optionSelectorMap[$count] = $option;
+            $this->output->writeln(
+                sprintf('%s %s', array_search($option->name, $this->optionSelectorMap), $option->label)
+            );
         }
     }
 
