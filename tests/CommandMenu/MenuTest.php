@@ -44,7 +44,6 @@ class MenuTest extends TestCase
     {
         $this->output         = new TestOutput();
         $this->menu           = new TestMenu($this->output);
-        $this->defaultWrapper = new ParenthesisWrapper();
 
         // create some options for our menu
         $this->options = $this->createRandomOptions(5);
@@ -71,11 +70,6 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withName(uniqid())->build(), OptionBuilder::create()->build()];
         // different label, same name
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
-    }
-
-    public function testDefaultSelectorWrapperIsParenthesis()
-    {
-        $this->assertInstanceOf(get_class($this->defaultWrapper), $this->menu->getWrapper());
     }
 
     public function testRenderDefaultMenu()
@@ -173,7 +167,7 @@ class MenuTest extends TestCase
 
         $count = 1;
         foreach ($options as $option) {
-            $expected = sprintf('%s %s', $this->defaultWrapper->wrap((string)$count), $option->label);
+            $expected = sprintf('%s %s', (string) $count, $option->label);
             $this->assertContains($expected, $this->output->output);
             $count++;
         }

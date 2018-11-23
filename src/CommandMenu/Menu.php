@@ -13,8 +13,7 @@ namespace RoadBunch\CommandMenu;
 
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\Counter\NumberCounter;
-use RoadBunch\Wrapper\ParenthesisWrapper;
-use RoadBunch\Wrapper\Wrapper;
+use RoadBunch\Wrapper\NullWrapper;
 use RoadBunch\Wrapper\WrapperInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -41,11 +40,17 @@ class Menu
     /** @var WrapperInterface $wrapper */
     protected $wrapper;
 
+    /**
+     * Menu constructor.
+     *
+     * @param OutputInterface       $output
+     * @param WrapperInterface|null $selectionWrapper wrap menu selectors, eg. (q) or [q]
+     */
     public function __construct(OutputInterface $output, WrapperInterface $selectionWrapper = null)
     {
         $this->output    = $output;
         $this->counter   = new NumberCounter();
-        $this->wrapper   = $selectionWrapper ?? new ParenthesisWrapper();
+        $this->wrapper   = $selectionWrapper ?? new NullWrapper();
     }
 
     public function setOptionDelimiter(string $delimiter)
