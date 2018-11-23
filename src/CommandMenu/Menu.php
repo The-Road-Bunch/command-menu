@@ -24,6 +24,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Menu
 {
+    const DEFAULT_DELIMITER = ') ';
+
     /** @var Option[] $options */
     protected $options = [];
     /** @var Option[] $optionSelectorMap */
@@ -41,21 +43,26 @@ class Menu
         $this->counter = new NumberCounter();
     }
 
-    public function addOption(string $name, string $label): void
+    public function addOption(string $name, string $label, string $selector = null): void
     {
+        $count = $this->counter->next();
         $option = new Option($name, $label);
 
         $this->checkForDuplicates($option);
+
         $this->options[] = $option;
-        $this->optionSelectorMap[$this->counter->next()] = $option;
+        if ($selector) {
+            $this->optionSelectorMap[$selector] = $option;
+        } else {
+            $this->optionSelectorMap[$count] = $option;
+        }
     }
 
     public function render(): void
     {
         foreach ($this->options as $option) {
-            $this->output->writeln(
-                sprintf('%s %s', array_search($option->name, $this->optionSelectorMap), $option->label)
-            );
+            $selector = array_search($option, $this->optionSelectorMap);
+            $this->output->writeln(sprintf('%s%s%s', $selector, self::DEFAULT_DELIMITER, $option->label));
         }
     }
 

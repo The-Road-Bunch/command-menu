@@ -16,6 +16,7 @@ use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
+use RoadBunch\Counter\NumberCounter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -65,12 +66,14 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
-    public function testRenderDefaultMenu()
+    public function testRenderDefaultMenuCreatesNumberedMenu()
     {
         $this->menu->render();
 
+        $counter = new NumberCounter();
         foreach ($this->options as $option) {
-            $this->assertContains($option->label, $this->output->output);
+            $expected = sprintf('%s%s%s', $counter->next(), Menu::DEFAULT_DELIMITER, $option->label);
+            $this->assertContains($expected, $this->output->output);
         }
     }
 
@@ -98,6 +101,22 @@ class MenuTest extends TestCase
             $count++;
         }
         $this->assertNull($this->menu->makeSelection('fake selection'));
+    }
+
+    public function testCustomOptionSelector()
+    {
+        $selector = 'mantis';
+        $option   = OptionBuilder::create()
+                                 ->withName("doc_mantis")
+                                 ->withLabel('Dr. Mantis Toboggan, MD')
+                                 ->build();
+
+        $this->menu->addOption($option->name, $option->label, $selector);
+        $this->menu->render();
+
+        echo $this->output->output;
+
+        $this->assertEquals($option->name, $this->menu->makeSelection($selector));
     }
 
     private function createRandomOptions(int $numOptions)
