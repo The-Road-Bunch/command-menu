@@ -12,11 +12,11 @@
 namespace RoadBunch\Tests\CommandMenu;
 
 
+use InvalidArgumentException;
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
-use RoadBunch\Counter\NumberCounter;
 use RoadBunch\Wrapper\ParenthesisWrapper;
 use RoadBunch\Wrapper\Wrapper;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -100,6 +100,15 @@ class MenuTest extends TestCase
         $this->render();
         $this->assertRendersMenuWithOptions($newOptions);
         $this->assertNotContains($oldOption->label, $this->output->output);
+    }
+
+    public function testSetOptionsNotArrayOfOptions()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Items in array must be an instance of Object');
+
+        $options = ['not', 'instances', 'of', 'Option'];
+        $this->menu->setOptions($options);
     }
 
     public function testRenderMultipleTimesCreatesSameMenu()

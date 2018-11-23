@@ -48,29 +48,46 @@ class Menu
      */
     public function __construct(OutputInterface $output, WrapperInterface $selectionWrapper = null)
     {
-        $this->output    = $output;
-        $this->counter   = new NumberCounter();
-        $this->wrapper   = $selectionWrapper ?? new NullWrapper();
+        $this->output  = $output;
+        $this->counter = new NumberCounter();
+        $this->wrapper = $selectionWrapper ?? new NullWrapper();
     }
 
+    /**
+     * Add an option to the menu
+     * If a selector is not provided, an incrementing integer will be assigned to the menu option
+     *
+     * @param string      $name
+     * @param string      $label
+     * @param string|null $selector
+     */
     public function addOption(string $name, string $label, string $selector = null): void
     {
         $this->appendOption(new Option($name, $label), $selector);
     }
 
     /**
-     * @param Option[] $options
+     * Set the menu options
+     * This will override any options previously set or added
+     *
+     * @param iterable $options
      */
-    public function setOptions(array $options): void
+    public function setOptions(iterable $options): void
     {
         $this->counter->reset();
         $this->optionMap = [];
 
         foreach ($options as $option) {
+            if (!$option instanceof Option) {
+                throw new \InvalidArgumentException('Items in array must be an instance of Object');
+            }
             $this->appendOption($option);
         }
     }
 
+    /**
+     * Render the menu to output
+     */
     public function render(): void
     {
         foreach ($this->optionMap as $option) {
@@ -79,6 +96,10 @@ class Menu
         }
     }
 
+    /**
+     * @param $selection
+     * @return string|null
+     */
     public function makeSelection($selection): ?string
     {
         if (!empty($this->optionMap[$selection])) {
