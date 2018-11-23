@@ -11,7 +11,12 @@
 
 namespace RoadBunch\Counter;
 
-
+/**
+ * Class NumberCounter
+ *
+ * @author  Dan McAdams
+ * @package RoadBunch\Counter
+ */
 class NumberCounter
 {
     protected $startNumber;

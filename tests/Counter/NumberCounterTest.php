@@ -15,6 +15,12 @@ namespace RoadBunch\Tests\Counter;
 use PHPUnit\Framework\TestCase;
 use RoadBunch\Counter\NumberCounter;
 
+/**
+ * Class NumberCounterTest
+ *
+ * @author  Dan McAdams
+ * @package RoadBunch\Tests\Counter
+ */
 class NumberCounterTest extends TestCase
 {
     public function testDefaultStartAtOne()
@@ -34,7 +40,7 @@ class NumberCounterTest extends TestCase
     public function testNextReturnsConsecutiveNumbers()
     {
         $counter = new NumberCounter();
-        for ($i = 1; $i < 3; $i++) {
+        for ($i = 1; $i < 10; $i++) {
             $this->assertEquals($i, $counter->next());
         }
     }
