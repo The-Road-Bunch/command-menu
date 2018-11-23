@@ -26,9 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Menu
 {
-    /** @var string self::DEFAULT_DELIMITER */
-    private static $defaultDelimiter = ') ';
-
     /** @var Option[] $optionMap */
     protected $optionMap = [];
 
@@ -48,7 +45,6 @@ class Menu
     {
         $this->output    = $output;
         $this->counter   = new NumberCounter();
-        $this->delimiter = self::$defaultDelimiter;
         $this->wrapper   = $selectionWrapper ?? new ParenthesisWrapper();
     }
 
