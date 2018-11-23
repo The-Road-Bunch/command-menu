@@ -11,7 +11,12 @@
 
 namespace RoadBunch\CommandMenu\Exception;
 
-
+/**
+ * Class SlugNotFoundException
+ *
+ * @author  Dan McAdams
+ * @package RoadBunch\CommandMenu\Exception
+ */
 class SlugNotFoundException extends \Exception
 {
 }

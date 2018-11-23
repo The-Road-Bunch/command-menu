@@ -14,6 +14,7 @@ namespace RoadBunch\CommandMenu;
 /**
  * Class Option
  *
+ * @author  Dan McAdams
  * @package RoadBunch\CommandMenu
  */
 class Option

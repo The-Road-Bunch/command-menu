@@ -1,5 +1,13 @@
 <?php declare(strict_types=1);
 
+/**
+ * This file is part of the theroadbunch/command-menu package.
+ *
+ * (c) Dan McAdams <danmcadams@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace RoadBunch\Tests\CommandMenu;
 
@@ -7,6 +15,12 @@ namespace RoadBunch\Tests\CommandMenu;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class TestOutput
+ *
+ * @author  Dan McAdams
+ * @package RoadBunch\Tests\CommandMenu
+ */
 class TestOutput implements OutputInterface
 {
     // we'll spy on the lines being provided here

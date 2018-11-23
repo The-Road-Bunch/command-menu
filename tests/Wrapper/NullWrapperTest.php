@@ -1,9 +1,12 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: dan
- * Date: 11/23/18
- * Time: 5:25 PM
+ * This file is part of the theroadbunch/command-menu package.
+ *
+ * (c) Dan McAdams <danmcadams@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Wrapper;
@@ -12,6 +15,12 @@ namespace Wrapper;
 use PHPUnit\Framework\TestCase;
 use RoadBunch\Wrapper\NullWrapper;
 
+/**
+ * Class NullWrapperTest
+ *
+ * @author  Dan McAdams
+ * @package Wrapper
+ */
 class NullWrapperTest extends TestCase
 {
     public function testReturnsOriginalString()

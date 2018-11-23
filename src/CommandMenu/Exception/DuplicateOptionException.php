@@ -11,7 +11,12 @@
 
 namespace RoadBunch\CommandMenu\Exception;
 
-
+/**
+ * Class DuplicateOptionException
+ *
+ * @author  Dan McAdams
+ * @package RoadBunch\CommandMenu\Exception
+ */
 class DuplicateOptionException extends \Exception
 {
 }
