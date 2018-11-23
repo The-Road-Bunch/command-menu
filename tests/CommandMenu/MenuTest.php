@@ -114,8 +114,6 @@ class MenuTest extends TestCase
         $this->menu->addOption($option->name, $option->label, $selector);
         $this->menu->render();
 
-        echo $this->output->output;
-
         $this->assertEquals($option->name, $this->menu->makeSelection($selector));
     }
 
