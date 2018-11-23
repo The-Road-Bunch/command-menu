@@ -12,6 +12,11 @@ class TestOutput implements OutputInterface
     // we'll spy on the lines being provided here
     public $output = '';
 
+    /**
+     * clear the output here because it's just a string we're storing in memory
+     * for the test. Actual output doesn't get buffered like this, so we're really
+     * testing that the menu produces the same result every time we render it.
+     */
     public function clear()
     {
         $this->output = '';

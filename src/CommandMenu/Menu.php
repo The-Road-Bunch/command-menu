@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Menu
 {
     /** @var string self::DEFAULT_DELIMITER */
-    const DEFAULT_DELIMITER = ') ';
+    private static $defaultDelimiter = ') ';
 
     /** @var Option[] $optionMap */
     protected $optionMap = [];
@@ -37,12 +37,13 @@ class Menu
     protected $counter;
 
     /** @var string $delimiter */
-    protected $delimiter = self::DEFAULT_DELIMITER;
+    protected $delimiter;
 
     public function __construct(OutputInterface $output)
     {
-        $this->output  = $output;
-        $this->counter = new NumberCounter();
+        $this->output    = $output;
+        $this->counter   = new NumberCounter();
+        $this->delimiter = self::$defaultDelimiter;
     }
 
     public function setOptionDelimiter(string $delimiter)
@@ -52,11 +53,20 @@ class Menu
 
     public function addOption(string $name, string $label, string $selector = null): void
     {
-        $selector = $selector ?? $this->counter->next();
-        $option   = new Option($name, $label);
+        $this->appendOption(new Option($name, $label), $selector);
+    }
 
-        $this->checkForDuplicates($option);
-        $this->optionMap[$selector] = $option;
+    /**
+     * @param Option[] $options
+     */
+    public function setOptions(array $options): void
+    {
+        $this->counter->reset();
+        $this->optionMap = [];
+
+        foreach ($options as $option) {
+            $this->appendOption($option);
+        }
     }
 
     public function render(): void
@@ -75,7 +85,13 @@ class Menu
         return null;
     }
 
-    private function checkForDuplicates(Option $newOption): void
+    private function appendOption(Option $option, string $selector = null)
+    {
+        $this->validateOption($option);
+        $this->optionMap[$selector ?? $this->counter->next()] = $option;
+    }
+
+    private function validateOption(Option $newOption): void
     {
         foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {

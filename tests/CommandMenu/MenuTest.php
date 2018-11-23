@@ -27,6 +27,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class MenuTest extends TestCase
 {
+    const DEFAULT_DELIMITER = ') ';
+
     /** @var TestOutput|OutputInterface */
     protected $output;
     /** @var Menu $menu */
@@ -68,36 +70,44 @@ class MenuTest extends TestCase
 
     public function testRenderDefaultMenuCreatesNumberedMenu()
     {
-        $this->menu->render();
-        $this->assertRendersNumberedMenuWithDelimiter(Menu::DEFAULT_DELIMITER);
+        $this->render();
+        $this->assertRendersNumberedMenuWithDelimiter($this->options, self::DEFAULT_DELIMITER);
     }
 
     public function testSetCustomDelimiter()
     {
         $delimiter = '| ';
         $this->menu->setOptionDelimiter($delimiter);
-        $this->menu->render();
+        $this->render();
 
-        $this->assertRendersNumberedMenuWithDelimiter($delimiter);
+        $this->assertRendersNumberedMenuWithDelimiter($this->options, $delimiter);
+    }
+
+    public function testSetOptionsReplacesOptions()
+    {
+        $oldOption  = OptionBuilder::create()->build();
+        $newOptions = $this->createRandomOptions(3);
+
+        $this->menu->addOption($oldOption->name, $oldOption->label);
+        $this->menu->setOptions($newOptions);
+
+        $this->render();
+
+        $this->assertNotContains($oldOption->label, $this->output->output);
+        $this->assertRendersNumberedMenuWithDelimiter($newOptions);
     }
 
     public function testRenderMultipleTimesCreatesSameMenu()
     {
-        $this->menu->render();
+        $this->render();
         $output = $this->output->output;
-
-        // clear the output here because it's just a string we're storing in memory
-        // for the test. Actual output doesn't get buffered like this, so we're really
-        // testing that the menu produces the same result every time we render it.
-        $this->output->clear();
-
-        $this->menu->render();
+        $this->render();
         $this->assertEquals($output, $this->output->output);
     }
 
     public function testMakeSelection()
     {
-        $this->menu->render();
+        $this->render();
 
         $count = 1;
         foreach ($this->options as $option) {
@@ -116,7 +126,7 @@ class MenuTest extends TestCase
                                  ->build();
 
         $this->menu->addOption($option->name, $option->label, $selector);
-        $this->menu->render();
+        $this->render();
 
         $this->assertEquals($option->name, $this->menu->makeSelection($selector));
     }
@@ -137,12 +147,18 @@ class MenuTest extends TestCase
         }
     }
 
-    private function assertRendersNumberedMenuWithDelimiter(string $delimiter): void
+    private function assertRendersNumberedMenuWithDelimiter(array $options, string $delimiter = self::DEFAULT_DELIMITER): void
     {
         $counter = new NumberCounter();
-        foreach ($this->options as $option) {
+        foreach ($options as $option) {
             $expected = sprintf('%s%s%s', $counter->next(), $delimiter, $option->label);
             $this->assertContains($expected, $this->output->output);
         }
+    }
+
+    private function render(): void
+    {
+        $this->output->clear();
+        $this->menu->render();
     }
 }
