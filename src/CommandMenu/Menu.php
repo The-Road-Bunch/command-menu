@@ -37,10 +37,17 @@ class Menu
     /** @var NumberCounter $counter */
     protected $counter;
 
+    protected $delimiter = self::DEFAULT_DELIMITER;
+
     public function __construct(OutputInterface $output)
     {
         $this->output  = $output;
         $this->counter = new NumberCounter();
+    }
+
+    public function setOptionDelimiter(string $delimiter)
+    {
+        $this->delimiter = $delimiter;
     }
 
     public function addOption(string $name, string $label, string $selector = null): void
@@ -62,7 +69,7 @@ class Menu
     {
         foreach ($this->options as $option) {
             $selector = array_search($option, $this->optionSelectorMap);
-            $this->output->writeln(sprintf('%s%s%s', $selector, self::DEFAULT_DELIMITER, $option->label));
+            $this->output->writeln(sprintf('%s%s%s', $selector, $this->delimiter, $option->label));
         }
     }
 

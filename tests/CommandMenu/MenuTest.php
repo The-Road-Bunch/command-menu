@@ -77,6 +77,19 @@ class MenuTest extends TestCase
         }
     }
 
+    public function testSetCustomDelimiter()
+    {
+        $delimiter = '| ';
+        $this->menu->setOptionDelimiter($delimiter);
+        $this->menu->render();
+
+        $counter = new NumberCounter();
+        foreach ($this->options as $option) {
+            $expected = sprintf('%s%s%s', $counter->next(), $delimiter, $option->label);
+            $this->assertContains($expected, $this->output->output);
+        }
+    }
+
     public function testRenderMultipleTimesCreatesSameMenu()
     {
         $this->menu->render();
