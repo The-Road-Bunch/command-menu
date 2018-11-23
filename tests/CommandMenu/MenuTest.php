@@ -30,11 +30,18 @@ class MenuTest extends TestCase
     protected $output;
     /** @var Menu $menu */
     protected $menu;
+    /** @var Option[] */
+    protected $options;
 
     protected function setUp()
     {
         $this->output = new TestOutput();
         $this->menu   = new Menu($this->output);
+
+        // create some options for our menu
+        $this->options = $this->createRandomOptions(5);
+        // add them to the menu
+        $this->addMenuOptions($this->options);
     }
 
     /**
@@ -60,23 +67,33 @@ class MenuTest extends TestCase
 
     public function testRenderDefaultMenu()
     {
-        $options = $this->createRandomOptions(2);
-        $this->addMenuOptions($options);
-
         $this->menu->render();
 
-        foreach ($options as $option) {
+        foreach ($this->options as $option) {
             $this->assertContains($option->label, $this->output->output);
         }
     }
 
+    public function testRenderMultipleTimesCreatesSameMenu()
+    {
+        $this->menu->render();
+        $output = $this->output->output;
+
+        // clear the output here because it's just a string we're storing in memory
+        // for the test. Actual output doesn't get buffered like this, so we're really
+        // testing that the menu produces the same result every time we render it.
+        $this->output->clear();
+
+        $this->menu->render();
+        $this->assertEquals($output, $this->output->output);
+    }
+
     public function testMakeSelection()
     {
-        $this->addMenuOptions($options = $this->createRandomOptions(2));
         $this->menu->render();
 
         $count = 1;
-        foreach ($options as $option) {
+        foreach ($this->options as $option) {
             $this->assertEquals($option, $this->menu->makeSelection($count));
             $count++;
         }

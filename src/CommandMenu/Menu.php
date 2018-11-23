@@ -49,6 +49,7 @@ class Menu
 
     public function render(): void
     {
+        $this->counter->reset();
         foreach ($this->options as $option) {
             $count = $this->counter->next();
             $this->output->writeln(sprintf('%s %s', $count, $option->label));
