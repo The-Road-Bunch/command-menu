@@ -23,6 +23,7 @@ class ParenthesisWrapperTest extends TestCase
     public function testWrapsStringInParenthesis()
     {
         $wrapper = new ParenthesisWrapper();
-        $this->assertEquals('(Frank)', $wrapper->wrap('Frank'));
+        $str  = 'Frank';
+        $this->assertEquals('('.$str.')', $wrapper->wrap($str));
     }
 }

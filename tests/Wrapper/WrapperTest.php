@@ -22,7 +22,8 @@ class WrapperTest extends TestCase
 {
     public function testCreatCustomWrapper()
     {
-        $wrapper = new Wrapper('[', ']');
-        $this->assertEquals('[charlie]', $wrapper->wrap('charlie'));
+        $wrapper = new Wrapper('<', '>');
+        $str  = 'charlie';
+        $this->assertEquals('<'.$str.'>', $wrapper->wrap($str));
     }
 }
