@@ -41,7 +41,7 @@ class MenuTest extends TestCase
         // create some options for our menu
         $this->options = $this->createRandomOptions(5);
         // add them to the menu
-        $this->addMenuOptions($this->options);
+        $this->setMenuOptions($this->options);
     }
 
     /**
@@ -51,8 +51,8 @@ class MenuTest extends TestCase
     {
         $this->expectException(DuplicateOptionException::class);
 
-        $this->menu->addOption($optionOne);
-        $this->menu->addOption($optionTwo);
+        $this->menu->addOption($optionOne->name, $optionOne->label);
+        $this->menu->addOption($optionTwo->name, $optionTwo->label);
     }
 
     public function duplicateOptionProvider(): \Generator
@@ -94,7 +94,7 @@ class MenuTest extends TestCase
 
         $count = 1;
         foreach ($this->options as $option) {
-            $this->assertEquals($option, $this->menu->makeSelection($count));
+            $this->assertEquals($option->name, $this->menu->makeSelection($count));
             $count++;
         }
         $this->assertNull($this->menu->makeSelection('fake selection'));
@@ -109,10 +109,13 @@ class MenuTest extends TestCase
         return $options;
     }
 
-    private function addMenuOptions($options)
+    /**
+     * @param Option[] $options
+     */
+    private function setMenuOptions($options)
     {
         foreach ($options as $option) {
-            $this->menu->addOption($option);
+            $this->menu->addOption($option->name, $option->label);
         }
     }
 }

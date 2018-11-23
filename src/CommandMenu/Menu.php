@@ -41,8 +41,10 @@ class Menu
         $this->counter = new NumberCounter();
     }
 
-    public function addOption(Option $option): void
+    public function addOption(string $name, string $label): void
     {
+        $option = new Option($name, $label);
+
         $this->checkForDuplicates($option);
         $this->options[] = $option;
     }
@@ -57,10 +59,10 @@ class Menu
         }
     }
 
-    public function makeSelection($selection): ?Option
+    public function makeSelection($selection): ?string
     {
         if (!empty($this->optionSelectorMap[$selection])) {
-            return $this->optionSelectorMap[$selection];
+            return $this->optionSelectorMap[$selection]->name;
         }
         return null;
     }
