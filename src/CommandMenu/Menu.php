@@ -53,11 +53,6 @@ class Menu
         $this->wrapper   = $selectionWrapper ?? new NullWrapper();
     }
 
-    public function setOptionDelimiter(string $delimiter)
-    {
-        $this->delimiter = $delimiter;
-    }
-
     public function addOption(string $name, string $label, string $selector = null): void
     {
         $this->appendOption(new Option($name, $label), $selector);
