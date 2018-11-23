@@ -13,6 +13,7 @@ namespace RoadBunch\CommandMenu;
 
 
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\Counter\NumberCounter;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -23,46 +24,52 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Menu
 {
-    protected $options   = [];
-    protected $optionMap = [];
+    /** @var Option[] $options */
+    protected $options = [];
+    /** @var Option[] $optionSelectorMap */
+    protected $optionSelectorMap = [];
 
     /** @var OutputInterface $output */
     protected $output;
 
+    /** @var NumberCounter $counter */
+    protected $counter;
+
     public function __construct(OutputInterface $output)
     {
-        $this->output = $output;
+        $this->output  = $output;
+        $this->counter = new NumberCounter();
     }
 
     public function addOption(Option $option): void
     {
         $this->checkForDuplicates($option);
-        $this->options[$option->name] = $option->label;
+        $this->options[] = $option;
     }
 
     public function render(): void
     {
-        $count = 1;
-        foreach ($this->options as $name => $label) {
-            $this->output->writeln(sprintf('%s %s', $count, $label));
-            $this->optionMap[$count] = $name;
-            $count++;
+        foreach ($this->options as $option) {
+            $count = $this->counter->next();
+            $this->output->writeln(sprintf('%s %s', $count, $option->label));
+            $this->optionSelectorMap[$count] = $option;
         }
     }
 
     public function makeSelection($selection): ?Option
     {
-        if (!empty($this->optionMap[$selection])) {
-            $name = $this->optionMap[$selection];
-            return new Option($name, $this->options[$name]);
+        if (!empty($this->optionSelectorMap[$selection])) {
+            return $this->optionSelectorMap[$selection];
         }
         return null;
     }
 
-    private function checkForDuplicates(Option $option): void
+    private function checkForDuplicates(Option $newOption): void
     {
-        if (isset($this->options[$option->name]) || in_array($option->label, $this->options)) {
-            throw new DuplicateOptionException();
+        foreach ($this->options as $option) {
+            if ($option->name == $newOption->name || $option->label == $newOption->label) {
+                throw new DuplicateOptionException();
+            }
         }
     }
 }

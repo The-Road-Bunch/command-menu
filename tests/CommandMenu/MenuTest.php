@@ -17,7 +17,6 @@ use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class MenuTest
@@ -61,29 +60,60 @@ class MenuTest extends TestCase
 
     public function testRenderDefaultMenu()
     {
-        $optOne = OptionBuilder::create()->withName("option_frank")->withLabel('Frank')->build();
-        $optTwo = OptionBuilder::create()->withName("option_charlie")->withLabel('Charlie')->build();
-
-        $this->menu->addOption($optOne);
-        $this->menu->addOption($optTwo);
+        $options = $this->createRandomOptions(2);
+        $this->addMenuOptions($options);
 
         $this->menu->render();
 
-        $this->assertContains($optOne->label, $this->output->output);
-        $this->assertContains($optTwo->label, $this->output->output);
+        foreach ($options as $option) {
+            $this->assertContains($option->label, $this->output->output);
+        }
     }
 
     public function testMakeSelection()
     {
-        $optOne = OptionBuilder::create()->withName('option_waitress')->withLabel('The Waitress')->build();
-        $optTwo = OptionBuilder::create()->withName('option_cricket')->withLabel('Cricket')->build();
-
-        $this->menu->addOption($optOne);
-        $this->menu->addOption($optTwo);
+        $this->addMenuOptions($options = $this->createRandomOptions(2));
         $this->menu->render();
 
-        $this->assertEquals($optTwo, $this->menu->makeSelection(2));
-        $this->assertEquals($optOne, $this->menu->makeSelection(1));
+        $count = 1;
+        foreach ($options as $option) {
+            $this->assertEquals($option, $this->menu->makeSelection($count));
+            $count++;
+        }
         $this->assertNull($this->menu->makeSelection('fake selection'));
+    }
+
+    public function testMenu()
+    {
+        $add    = new Option('add', 'Add User');
+        $rename = new Option('rename', 'Rename User');
+
+        $menu = new Menu($this->output);
+        $menu->addOption($rename);
+        $menu->addOption($add);
+
+        $menu->addOoption('add', 'Add User');
+        $menu->addOoption('rename', 'Rename User');
+
+        $menu->render();
+        $selection = $menu->makeSelection(2);
+
+        $this->assertEquals($add, $selection);
+    }
+
+    private function createRandomOptions(int $numOptions)
+    {
+        $options = [];
+        for ($i = 0; $i < $numOptions; $i++) {
+            $options[] = OptionBuilder::create()->withName(uniqid())->withLabel(uniqid())->build();
+        }
+        return $options;
+    }
+
+    private function addMenuOptions($options)
+    {
+        foreach ($options as $option) {
+            $this->menu->addOption($option);
+        }
     }
 }
