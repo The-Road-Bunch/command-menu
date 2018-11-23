@@ -104,7 +104,7 @@ class MenuTest extends TestCase
         $this->menu->setOptions($newOptions);
 
         $this->render();
-
+        $this->assertRendersMenuWithOptions($newOptions);
         $this->assertNotContains($oldOption->label, $this->output->output);
     }
 
