@@ -17,6 +17,8 @@ use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 use RoadBunch\Counter\NumberCounter;
+use RoadBunch\Wrapper\ParenthesisWrapper;
+use RoadBunch\Wrapper\Wrapper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -31,15 +33,18 @@ class MenuTest extends TestCase
 
     /** @var TestOutput|OutputInterface */
     protected $output;
-    /** @var Menu $menu */
+    /** @var Menu|TestMenu $menu */
     protected $menu;
     /** @var Option[] */
     protected $options;
+    /** @var ParenthesisWrapper $defaultWrapper */
+    protected $defaultWrapper;
 
     protected function setUp()
     {
-        $this->output = new TestOutput();
-        $this->menu   = new Menu($this->output);
+        $this->output         = new TestOutput();
+        $this->menu           = new TestMenu($this->output);
+        $this->defaultWrapper = new ParenthesisWrapper();
 
         // create some options for our menu
         $this->options = $this->createRandomOptions(5);
@@ -68,22 +73,29 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
-    public function testRenderDefaultMenuCreatesNumberedMenu()
+    public function testDefaultSelectorWrapperIsParenthesis()
     {
-        $this->render();
-        $this->assertRendersNumberedMenuWithDelimiter($this->options, self::DEFAULT_DELIMITER);
+        $this->assertInstanceOf(get_class($this->defaultWrapper), $this->menu->getWrapper());
     }
 
-    public function testSetCustomDelimiter()
+    public function testRenderDefaultMenu()
     {
-        $delimiter = '| ';
-        $this->menu->setOptionDelimiter($delimiter);
-        $this->render();
-
-        $this->assertRendersNumberedMenuWithDelimiter($this->options, $delimiter);
+        $this->assertRendersMenuWithOptions($this->options);
     }
 
-    public function testSetOptionsReplacesOptions()
+    public function testSetCustomWrapper()
+    {
+        $wrapper  = new Wrapper('<', '>');
+        $menu     = new Menu($this->output, $wrapper);
+        $selector = 'd';
+
+        $menu->addOption('dee', 'Bird', $selector);
+        $menu->render();
+
+        $this->assertContains(sprintf('%s', $wrapper->wrap($selector)), $this->output->output);
+    }
+
+    public function testSetOptions()
     {
         $oldOption  = OptionBuilder::create()->build();
         $newOptions = $this->createRandomOptions(3);
@@ -94,7 +106,6 @@ class MenuTest extends TestCase
         $this->render();
 
         $this->assertNotContains($oldOption->label, $this->output->output);
-        $this->assertRendersNumberedMenuWithDelimiter($newOptions);
     }
 
     public function testRenderMultipleTimesCreatesSameMenu()
@@ -147,18 +158,32 @@ class MenuTest extends TestCase
         }
     }
 
-    private function assertRendersNumberedMenuWithDelimiter(array $options, string $delimiter = self::DEFAULT_DELIMITER): void
-    {
-        $counter = new NumberCounter();
-        foreach ($options as $option) {
-            $expected = sprintf('%s%s%s', $counter->next(), $delimiter, $option->label);
-            $this->assertContains($expected, $this->output->output);
-        }
-    }
-
     private function render(): void
     {
         $this->output->clear();
         $this->menu->render();
+    }
+
+    /**
+     * @param Option[] $options
+     */
+    private function assertRendersMenuWithOptions($options): void
+    {
+        $this->render();
+
+        $count = 1;
+        foreach ($options as $option) {
+            $expected = sprintf('%s %s', $this->defaultWrapper->wrap((string)$count), $option->label);
+            $this->assertContains($expected, $this->output->output);
+            $count++;
+        }
+    }
+}
+
+class TestMenu extends Menu
+{
+    public function getWrapper()
+    {
+        return $this->wrapper;
     }
 }

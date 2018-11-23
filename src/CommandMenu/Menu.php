@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 /**
  * This file is part of the theroadbunch/command-menu package.
@@ -11,9 +11,11 @@
 
 namespace RoadBunch\CommandMenu;
 
-
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\Counter\NumberCounter;
+use RoadBunch\Wrapper\ParenthesisWrapper;
+use RoadBunch\Wrapper\Wrapper;
+use RoadBunch\Wrapper\WrapperInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -39,11 +41,15 @@ class Menu
     /** @var string $delimiter */
     protected $delimiter;
 
-    public function __construct(OutputInterface $output)
+    /** @var WrapperInterface $wrapper */
+    protected $wrapper;
+
+    public function __construct(OutputInterface $output, WrapperInterface $selectionWrapper = null)
     {
         $this->output    = $output;
         $this->counter   = new NumberCounter();
         $this->delimiter = self::$defaultDelimiter;
+        $this->wrapper   = $selectionWrapper ?? new ParenthesisWrapper();
     }
 
     public function setOptionDelimiter(string $delimiter)
@@ -73,7 +79,7 @@ class Menu
     {
         foreach ($this->optionMap as $option) {
             $selector = array_search($option, $this->optionMap);
-            $this->output->writeln(sprintf('%s%s%s', $selector, $this->delimiter, $option->label));
+            $this->output->writeln(sprintf('%s %s', $this->wrapper->wrap($selector), $option->label));
         }
     }
 
