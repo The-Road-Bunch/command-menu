@@ -78,9 +78,6 @@ class Menu
         $this->optionMap = [];
 
         foreach ($options as $option) {
-            if (!$option instanceof Option) {
-                throw new \InvalidArgumentException('Items in array must be an instance of Object');
-            }
             $this->appendOption($option);
         }
     }
@@ -97,8 +94,12 @@ class Menu
     }
 
     /**
+     * Check the user input against the menu options
+     *
      * @param $selection
-     * @return string|null
+     *
+     * @return string   the name of the matching option if a selection was made
+     * @return null     if no option matches the selection
      */
     public function makeSelection($selection): ?string
     {
@@ -108,14 +109,17 @@ class Menu
         return null;
     }
 
-    private function appendOption(Option $option, string $selector = null)
+    private function appendOption($option, string $selector = null)
     {
         $this->validateOption($option);
         $this->optionMap[$selector ?? $this->counter->next()] = $option;
     }
 
-    private function validateOption(Option $newOption): void
+    private function validateOption($newOption): void
     {
+        if (!$newOption instanceof Option) {
+            throw new \InvalidArgumentException('Items in array must be an instance of Object');
+        }
         foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
                 throw new DuplicateOptionException();
