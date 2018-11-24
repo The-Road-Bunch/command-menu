@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author  Dan McAdams
  * @package RoadBunch\CommandMenu
  */
-class Menu
+class Menu implements MenuInterface
 {
     /** @var Option[] $optionMap */
     protected $optionMap = [];
@@ -70,7 +70,7 @@ class Menu
      * Set the menu options
      * This will override any options previously set or added
      *
-     * @param iterable $options
+     * @param Option[]|iterable $options
      */
     public function setOptions(iterable $options): void
     {
