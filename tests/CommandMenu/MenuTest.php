@@ -42,19 +42,25 @@ class MenuTest extends TestCase
 
     protected function setUp()
     {
-        $this->output         = new TestOutput();
-        $this->menu           = new TestMenu($this->output);
+        $this->output = new TestOutput();
+        $this->menu   = new TestMenu($this->output);
 
         // create some options for our menu
         $this->options = $this->createRandomOptions(5);
-        // add them to the menu
-        $this->setMenuOptions($this->options);
+    }
+
+    public function testAddOption()
+    {
+        $option = OptionBuilder::create()->build();
+        $this->menu->addOption($option->name, $option->label);
+
+        $this->assertTrue(in_array($option, $this->menu->getOptions()));
     }
 
     /**
      * @dataProvider duplicateOptionProvider
      */
-    public function testAddDuplicateOptionThrowsException(Option $optionOne, Option $optionTwo)
+    public function testAddDuplicateOptionThrowsDuplicateOptionException(Option $optionOne, Option $optionTwo)
     {
         $this->expectException(DuplicateOptionException::class);
 
@@ -72,23 +78,6 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
-    public function testRenderDefaultMenu()
-    {
-        $this->assertRendersMenuWithOptions($this->options);
-    }
-
-    public function testSetCustomWrapper()
-    {
-        $wrapper  = new Wrapper('<', '>');
-        $menu     = new Menu($this->output, $wrapper);
-        $selector = 'd';
-
-        $menu->addOption('dee', 'Bird', $selector);
-        $menu->render();
-
-        $this->assertContains(sprintf('%s', $wrapper->wrap($selector)), $this->output->output);
-    }
-
     public function testSetOptions()
     {
         $oldOption  = OptionBuilder::create()->build();
@@ -102,33 +91,13 @@ class MenuTest extends TestCase
         $this->assertNotContains($oldOption->label, $this->output->output);
     }
 
-    public function testSetOptionsNotArrayOfOptions()
+    public function testSetNonArrayOfOptionsThrowsInvalidArgumentException()
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Items in array must be an instance of Object');
 
         $options = ['not', 'instances', 'of', 'Option'];
         $this->menu->setOptions($options);
-    }
-
-    public function testRenderMultipleTimesCreatesSameMenu()
-    {
-        $this->render();
-        $output = $this->output->output;
-        $this->render();
-        $this->assertEquals($output, $this->output->output);
-    }
-
-    public function testMakeSelection()
-    {
-        $this->render();
-
-        $count = 1;
-        foreach ($this->options as $option) {
-            $this->assertEquals($option->name, $this->menu->makeSelection($count));
-            $count++;
-        }
-        $this->assertNull($this->menu->makeSelection('fake selection'));
     }
 
     public function testCustomOptionSelector()
@@ -145,6 +114,80 @@ class MenuTest extends TestCase
         $this->assertEquals($option->name, $this->menu->makeSelection($selector));
     }
 
+    public function testSetSelectorWrapper()
+    {
+        $wrapper  = new Wrapper('<', '>');
+        $menu     = new Menu($this->output, $wrapper);
+        $selector = 'd';
+
+        $menu->addOption('dee', 'Bird', $selector);
+        $menu->render();
+
+        $this->assertContains(sprintf('%s', $wrapper->wrap($selector)), $this->output->output);
+    }
+
+    /**
+     * This test that the menu prints an integer selector and a label by default
+     *
+     * @example 1 Option
+     * @example 2 A different Option
+     *
+     * @depends testAddOption
+     */
+    public function testRenderMenu()
+    {
+        foreach ($this->options as $option) {
+            $this->menu->addOption($option->name, $option->label);
+        }
+        $this->menu->render();
+
+        // turn the output into an array we can loop through line by line
+        $outputArray = explode(PHP_EOL, $this->output->output);
+        // clear the last element, it's going to be a blank line in the test
+        array_pop($outputArray);
+
+        // the options and the menu lines should line up exactly
+        $count         = 0;
+        $currentOption = current($this->options);
+
+        foreach ($outputArray as $line) {
+            $this->assertContains($currentOption->label, $this->output->output);
+            $this->assertContains((string) ++$count, $line);
+            next($this->options);
+        }
+    }
+
+    /**
+     * @depends testSetOptions
+     */
+    public function testRenderMultipleTimesCreatesSameMenu()
+    {
+        $this->menu->setOptions($this->options);
+
+        $this->render();
+        $output = $this->output->output;
+        $this->render();
+        $this->assertEquals($output, $this->output->output);
+    }
+
+    public function testMakeSelection()
+    {
+        $this->menu->setOptions($this->options);
+        $this->render();
+
+        $count = 1;
+        foreach ($this->options as $option) {
+            $this->assertEquals($option->name, $this->menu->makeSelection($count));
+            $count++;
+        }
+        $this->assertNull($this->menu->makeSelection('fake selection'));
+    }
+
+    /**
+     * @param int $numOptions
+     *
+     * @return Option[]
+     */
     private function createRandomOptions(int $numOptions)
     {
         $options = [];
@@ -152,13 +195,6 @@ class MenuTest extends TestCase
             $options[] = OptionBuilder::create()->withName(uniqid())->withLabel(uniqid())->build();
         }
         return $options;
-    }
-
-    private function setMenuOptions($options)
-    {
-        foreach ($options as $option) {
-            $this->menu->addOption($option->name, $option->label);
-        }
     }
 
     private function render(): void
@@ -185,8 +221,18 @@ class MenuTest extends TestCase
 
 class TestMenu extends Menu
 {
+    public function getOptions()
+    {
+        return $this->optionMap;
+    }
+
     public function getWrapper()
     {
         return $this->wrapper;
+    }
+
+    public function getOutput()
+    {
+        return $this->output;
     }
 }
