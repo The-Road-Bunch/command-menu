@@ -15,7 +15,9 @@ use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\Counter\NumberCounter;
 use RoadBunch\Wrapper\NullWrapper;
 use RoadBunch\Wrapper\WrapperInterface;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class Menu
@@ -31,23 +33,28 @@ class Menu implements MenuInterface
     /** @var OutputInterface $output */
     protected $output;
 
+    /** @var InputInterface $input */
+    protected $input;
+
     /** @var NumberCounter $counter */
     protected $counter;
 
-    /** @var string $delimiter */
-    protected $delimiter;
-
     /** @var WrapperInterface $wrapper */
     protected $wrapper;
+
+    /** @var string $title */
+    protected $title;
 
     /**
      * Menu constructor.
      *
      * @param OutputInterface $output
      */
-    public function __construct(OutputInterface $output)
+    public function __construct(InputInterface $input, OutputInterface $output)
     {
         $this->output  = $output;
+        $this->input   = $input;
+
         $this->counter = new NumberCounter();
         $this->wrapper = new NullWrapper();
     }
@@ -90,10 +97,19 @@ class Menu implements MenuInterface
     }
 
     /**
+     * @param string $message
+     */
+    public function title(string $message)
+    {
+        $this->title = $message;
+    }
+
+    /**
      * Render the menu to output
      */
     public function render(): void
     {
+        $this->renderTitle();
         foreach ($this->optionMap as $option) {
             $selector = array_search($option, $this->optionMap);
             $this->output->writeln(sprintf('%s %s', $this->wrapper->wrap($selector), $option->label));
@@ -131,6 +147,15 @@ class Menu implements MenuInterface
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
                 throw new DuplicateOptionException();
             }
+        }
+    }
+
+    private function renderTitle(): void
+    {
+        if ($this->title) {
+            $io = new SymfonyStyle($this->input, $this->output);
+            $io->section($this->title);
+            $this->output->writeln('');
         }
     }
 }

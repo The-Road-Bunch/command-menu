@@ -12,7 +12,9 @@
 namespace RoadBunch\Tests\CommandMenu;
 
 
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyleInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -65,5 +67,9 @@ class TestOutput implements OutputInterface
 
     public function setFormatter(OutputFormatterInterface $formatter) {}
 
-    public function getFormatter() {}
+    public function getFormatter() { return new TestFormatter(); }
+}
+
+class TestFormatter extends OutputFormatter
+{
 }

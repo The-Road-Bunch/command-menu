@@ -17,9 +17,10 @@ use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
-use RoadBunch\Wrapper\ParenthesisWrapper;
 use RoadBunch\Wrapper\Wrapper;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class MenuTest
@@ -31,19 +32,21 @@ class MenuTest extends TestCase
 {
     const DEFAULT_DELIMITER = ') ';
 
-    /** @var TestOutput|OutputInterface */
+    /** @var TestOutput|OutputInterface $output */
     protected $output;
+    /** @var TestInput|InputInterface $input */
+    protected $input;
+    protected $io;
     /** @var Menu|TestMenu $menu */
     protected $menu;
     /** @var Option[] */
     protected $options;
-    /** @var ParenthesisWrapper $defaultWrapper */
-    protected $defaultWrapper;
 
     protected function setUp()
     {
         $this->output = new TestOutput();
-        $this->menu   = new TestMenu($this->output);
+        $this->input  = new TestInput();
+        $this->menu   = new TestMenu($this->input, $this->output);
 
         // create some options for our menu
         $this->options = $this->createRandomOptions(5);
@@ -170,6 +173,21 @@ class MenuTest extends TestCase
         $this->assertEquals($output, $this->output->output);
     }
 
+    public function testRenderTitle()
+    {
+        $title = 'Menu Title';
+        $this->menu->title($title);
+        $this->render();
+
+        // Menu Title
+        // ==========
+        $output = $this->output->output;
+
+        $this->assertContains($title, $output);
+        $this->assertContains(PHP_EOL, $output);
+        $this->assertContains(str_repeat('-', strlen($title)), $output);
+    }
+
     public function testMakeSelection()
     {
         $this->menu->setOptions($this->options);
@@ -217,6 +235,12 @@ class MenuTest extends TestCase
             $count++;
         }
     }
+}
+
+class TestSymfonyStyle extends SymfonyStyle
+{
+    public $message;
+
 }
 
 class TestMenu extends Menu
