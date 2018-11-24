@@ -117,11 +117,11 @@ class MenuTest extends TestCase
     public function testSetSelectorWrapper()
     {
         $wrapper  = new Wrapper('<', '>');
-        $menu     = new Menu($this->output, $wrapper);
         $selector = 'd';
 
-        $menu->addOption('dee', 'Bird', $selector);
-        $menu->render();
+        $this->menu->setSelectorWrapper($wrapper);
+        $this->menu->addOption('dee', 'Bird', $selector);
+        $this->render();
 
         $this->assertContains(sprintf('%s', $wrapper->wrap($selector)), $this->output->output);
     }

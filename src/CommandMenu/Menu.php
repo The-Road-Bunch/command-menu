@@ -43,14 +43,21 @@ class Menu implements MenuInterface
     /**
      * Menu constructor.
      *
-     * @param OutputInterface       $output
-     * @param WrapperInterface|null $selectionWrapper wrap menu selectors, eg. (q) or [q]
+     * @param OutputInterface $output
      */
-    public function __construct(OutputInterface $output, WrapperInterface $selectionWrapper = null)
+    public function __construct(OutputInterface $output)
     {
         $this->output  = $output;
         $this->counter = new NumberCounter();
-        $this->wrapper = $selectionWrapper ?? new NullWrapper();
+        $this->wrapper = new NullWrapper();
+    }
+
+    /**
+     * @param WrapperInterface $wrapper wrap menu selectors, eg. (q) or [q]
+     */
+    public function setSelectorWrapper(WrapperInterface $wrapper)
+    {
+        $this->wrapper = $wrapper;
     }
 
     /**
