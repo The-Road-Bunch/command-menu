@@ -30,11 +30,8 @@ class Menu implements MenuInterface
     /** @var Option[] $optionMap */
     protected $optionMap = [];
 
-    /** @var OutputInterface $output */
-    protected $output;
-
-    /** @var InputInterface $input */
-    protected $input;
+    /** @var SymfonyStyle $io */
+    protected $io;
 
     /** @var NumberCounter $counter */
     protected $counter;
@@ -48,19 +45,29 @@ class Menu implements MenuInterface
     /**
      * Menu constructor.
      *
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
-        $this->output  = $output;
-        $this->input   = $input;
-
+        $this->io      = new SymfonyStyle($input, $output);
         $this->counter = new NumberCounter();
         $this->wrapper = new NullWrapper();
     }
 
     /**
-     * @param WrapperInterface $wrapper wrap menu selectors, eg. (q) or [q]
+     * Wrap menu selectors, eg. (q) or [q]
+     *
+     * @example
+     *  Using new Wrapper('', ')');
+     *
+     * // output
+     *
+     * 1) Option
+     * 2) Option
+     * 3) Option
+     *
+     * @param WrapperInterface $wrapper
      */
     public function setSelectorWrapper(WrapperInterface $wrapper)
     {
@@ -99,7 +106,7 @@ class Menu implements MenuInterface
     /**
      * @param string $message
      */
-    public function title(string $message)
+    public function title(string $message): void
     {
         $this->title = $message;
     }
@@ -112,7 +119,7 @@ class Menu implements MenuInterface
         $this->renderTitle();
         foreach ($this->optionMap as $option) {
             $selector = array_search($option, $this->optionMap);
-            $this->output->writeln(sprintf('%s %s', $this->wrapper->wrap($selector), $option->label));
+            $this->io->writeln(sprintf('%s %s', $this->wrapper->wrap($selector), $option->label));
         }
     }
 
@@ -132,7 +139,7 @@ class Menu implements MenuInterface
         return null;
     }
 
-    private function appendOption($option, string $selector = null)
+    private function appendOption($option, string $selector = null): void
     {
         $this->validateOption($option);
         $this->optionMap[$selector ?? $this->counter->next()] = $option;
@@ -153,9 +160,8 @@ class Menu implements MenuInterface
     private function renderTitle(): void
     {
         if ($this->title) {
-            $io = new SymfonyStyle($this->input, $this->output);
-            $io->section($this->title);
-            $this->output->writeln('');
+            $this->io->section($this->title);
+            $this->io->writeln('');
         }
     }
 }
