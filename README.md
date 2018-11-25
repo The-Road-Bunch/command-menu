@@ -1,15 +1,14 @@
 
 # theroadbunch/command-menu
+A simple menu for symfony console commands  
+  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   
-A simple menu for symfony console commands  
-    
 _a quick note:_   
 This README assumes you have an understanding of creating and running a console command in the symfony ecosystem
 
-
 ### Contents
-1. Release Notes (TBD)
+1. Release Notes (doc/release.md)
 2. [Installation](#installation)
 3. [Usage](#usage)  
     a. [Basic Usage](#basic-usage)    
