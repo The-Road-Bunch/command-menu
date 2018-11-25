@@ -114,7 +114,7 @@ class MenuTest extends TestCase
         $this->menu->addOption($option->name, $option->label, $selector);
         $this->render();
 
-        $this->assertEquals($option->name, $this->menu->makeSelection($selector));
+        $this->assertEquals($option->name, $this->menu->select($selector));
     }
 
     public function testSetSelectorWrapper()
@@ -195,10 +195,31 @@ class MenuTest extends TestCase
 
         $count = 1;
         foreach ($this->options as $option) {
-            $this->assertEquals($option->name, $this->menu->makeSelection($count));
+            $this->assertEquals($option->name, $this->menu->select($count));
             $count++;
         }
-        $this->assertNull($this->menu->makeSelection('fake selection'));
+        $this->assertNull($this->menu->select('fake selection'));
+    }
+
+    public function testAskForInputAndReturnSelection()
+    {
+        $expectedOption   = OptionBuilder::create()->withName('option')->build();
+        $question         = 'Please make a selection';
+        $expectedSelector = 'selector';
+
+        $style                   = new TestSymfonyStyle($this->input, $this->output);
+        $style->expectedSelector = $expectedSelector;
+
+        // replace the style created in the class so we can spy on it
+        $this->menu->injectSymfonyStyle($style);
+        $this->menu->setOptions($this->options);
+        $this->menu->addOption($expectedOption->name, $expectedOption->label, $expectedSelector);
+
+        $this->render();
+        $result = $this->menu->selectFromUserInput($question);
+
+        $this->assertEquals($question, $style->question);
+        $this->assertEquals($result, $expectedOption->name);
     }
 
     /**
@@ -240,11 +261,23 @@ class MenuTest extends TestCase
 class TestSymfonyStyle extends SymfonyStyle
 {
     public $message;
+    public $question;
+    public $expectedSelector;
 
+    public function ask($question, $default = null, $validator = null)
+    {
+        $this->question = $question;
+        return $this->expectedSelector;
+    }
 }
 
 class TestMenu extends Menu
 {
+    public function injectSymfonyStyle(SymfonyStyle $style)
+    {
+        $this->io = $style;
+    }
+
     public function getOptions()
     {
         return $this->optionMap;

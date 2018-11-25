@@ -131,12 +131,27 @@ class Menu implements MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function makeSelection($selection): ?string
+    public function select($selection): ?string
     {
         if (!empty($this->optionMap[$selection])) {
             return $this->optionMap[$selection]->name;
         }
         return null;
+    }
+
+    /**
+     * Sets expectation of input from the user
+     * returns the name of the selected menu option
+     *
+     * @param string $question
+     *
+     * @return string   the name of the matching option if a selection was made
+     * @return null     if no option matches the selection
+     */
+    public function selectFromUserInput(string $question): ?string
+    {
+        $response = $this->io->ask($question);
+        return $this->select($response);
     }
 
     private function appendOption($option, string $selector = null): void

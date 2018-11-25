@@ -11,6 +11,8 @@
 namespace RoadBunch\CommandMenu;
 
 
+use RoadBunch\Wrapper\WrapperInterface;
+
 /**
  * Class Menu
  *
@@ -19,6 +21,22 @@ namespace RoadBunch\CommandMenu;
  */
 interface MenuInterface
 {
+    /**
+     * Wrap menu selectors, eg. (q) or [q]
+     *
+     * @example
+     *  Using new Wrapper('', ')');
+     *
+     * // output
+     *
+     * 1) Option
+     * 2) Option
+     * 3) Option
+     *
+     * @param WrapperInterface $wrapper
+     */
+    public function setSelectorWrapper(WrapperInterface $wrapper);
+
     /**
      * Add an option to the menu
      * If a selector is not provided, an incrementing integer will be assigned to the menu option
@@ -38,6 +56,11 @@ interface MenuInterface
     public function setOptions(iterable $options): void;
 
     /**
+     * @param string $message
+     */
+    public function title(string $message): void;
+
+    /**
      * Render the menu to output
      */
     public function render(): void;
@@ -50,5 +73,16 @@ interface MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function makeSelection($selection): ?string;
+    public function select($selection): ?string;
+
+    /**
+     * Sets expectation of input from the user
+     * returns the name of the selected menu option
+     *
+     * @param string $question
+     *
+     * @return string   the name of the matching option if a selection was made
+     * @return null     if no option matches the selection
+     */
+    public function selectFromUserInput(string $question): ?string;
 }
