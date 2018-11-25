@@ -176,7 +176,6 @@ class Menu implements MenuInterface
     {
         if ($this->title) {
             $this->io->section($this->title);
-            $this->io->writeln('');
         }
     }
 }
