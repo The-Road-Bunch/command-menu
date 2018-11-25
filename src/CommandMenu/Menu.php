@@ -148,7 +148,7 @@ class Menu implements MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function selectFromUserInput(string $question): ?string
+    public function selectFromUserInput(string $question = 'Please make a selection'): ?string
     {
         $response = $this->io->ask($question);
         return $this->select($response);

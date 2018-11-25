@@ -201,13 +201,16 @@ class MenuTest extends TestCase
         $this->assertNull($this->menu->select('fake selection'));
     }
 
-    public function testAskForInputAndReturnSelection()
+    public function testSelectFromUserInput()
     {
         $expectedOption   = OptionBuilder::create()->withName('option')->build();
-        $question         = 'Please make a selection';
+        $defaultPrompt    = 'Please make a selection';
+        $customPrompt     = 'Yo, make a pick';
         $expectedSelector = 'selector';
 
-        $style                   = new TestSymfonyStyle($this->input, $this->output);
+        // creating a spy styler, this is how we ask the user for input,
+        // we want to fake that part of the process
+        $style = new TestSymfonyStyle($this->input, $this->output);
         $style->expectedSelector = $expectedSelector;
 
         // replace the style created in the class so we can spy on it
@@ -216,9 +219,14 @@ class MenuTest extends TestCase
         $this->menu->addOption($expectedOption->name, $expectedOption->label, $expectedSelector);
 
         $this->render();
-        $result = $this->menu->selectFromUserInput($question);
+        $result = $this->menu->selectFromUserInput();
 
-        $this->assertEquals($question, $style->question);
+        $this->assertEquals($defaultPrompt, $style->question);
+        $this->assertEquals($result, $expectedOption->name);
+
+        $result = $this->menu->selectFromUserInput($customPrompt);
+
+        $this->assertEquals($customPrompt, $style->question);
         $this->assertEquals($result, $expectedOption->name);
     }
 
