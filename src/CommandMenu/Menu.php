@@ -143,14 +143,14 @@ class Menu implements MenuInterface
      * Sets expectation of input from the user
      * returns the name of the selected menu option
      *
-     * @param string $question
+     * @param string $prompt
      *
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function selectFromUserInput(string $question = 'Please make a selection'): ?string
+    public function selectFromUserInput(string $prompt = 'Please make a selection'): ?string
     {
-        $response = $this->io->ask($question);
+        $response = $this->io->ask($prompt);
         return $this->select($response);
     }
 
