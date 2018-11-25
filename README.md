@@ -1,50 +1,110 @@
-# theroadbunch/command-menu
-A Simple Menu For Symfony Console Commands
 
+# theroadbunch/command-menu
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  
+A simple menu for symfony console commands  
+    
+_a quick note:_   
+This README assumes you have an understanding of creating and running a console command in the symfony ecosystem
+
 
 ### Contents
-1. Release Notes
+1. Release Notes (TBD)
 2. [Installation](#installation)
-3. [Basic Usage](#basic-usage)  
+3. [Usage](#usage)  
+    a. [Basic Usage](#basic-usage)    
+    b. [Using Selector Wrappers](#selector-wrappers)  
 4. [License](LICENSE)
 
 ### <a name="installation">Install using composer</a> <sup><small>[[?]](https://getcomposer.org)</a></small></sup>
 
 `composer require theroadbunch/command-menu`
 
+<a name="usage"></a>
 ### <a name="basic-usage">Basic Usage</a>
+Creating, rendering, and using a menu in your symfony console command
+```php
+<?php
+
+// ...
+use RoadBunch\CommandMenu\Menu;
+
+// ...
+
+public function execute(InputInterface $input, OutputInterface $output)
+{
+    // create the menu
+    $menu = new Menu($input, $output);
+    
+    // optional title
+    $menu->title('Options');
+    
+    // add options Menu::addOption(name, label)
+    // options are displayed in the order they are added
+    // sequential numbers will be created for selecting options
+    $menu->addOption('add', 'Add User');
+    $menu->addOption('delete', 'Delete User');
+    // add an option with a custom selector
+    $menu->addOption('quit', 'Quit', 'Q');        
+   
+    // render the menu
+    $menu->render();
+    
+    // prompt the user to make a selection
+    $selection = $menu->selectFromUserInput('Please make a selection'); 
+}   
+```
+Output
+```
+Options
+-------
+
+1 Add User
+2 Delete User
+Q Quit
+
+Please make a selection:
+> |
+```
+If the user selects `2` then `selectFromUserInput()` will return `"delete"`.  
+If the user selects `Q` then `selectFromUserInput()` will return `"quit"`
+
+### <a name="selector-wrappers">Using Selector Wrappers</a>
+
+Add a wrapper for option selectors
 ```php
 <?php
 
 use RoadBunch\CommandMenu\Menu;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
+use RoadBunch\Wrapper\ParenthesisWrapper;
+use RoadBunch\Wrapper\Wrapper;
+// ..
 
-class YourCommand extends Command
+public function execute(InputInterface $input, OutputInterface $output)
 {
-    // ...
+    $menu = new Menu($input, $output);
     
-    public function execute(InputInterface $input, OutputInterface $output)
-    {
-        $menu = new Menu($output);
-        
-        $menu->addOption('add', 'Add');
-        $menu->addOption('delete', 'Delete');
-        $menu->addOption('quit', 'Quit');
-        
-        $menu->render();      
-    }
+    // add options
     
-    // ...
+    // add a wrapper from the library
+    $menu->setSelectorWrapper(new ParenthesisWrapper());
+    $menu->render();
+    
+    // add a custom wrapper
+    $menu->setSelectorWrapper(new Wrapper('', ')'));
+    $menu->render();
 }
 ```
-// output
+output from the first `$menu->render()`
 ```
-1 Add
-2 Delete
-3 Quit
+(1) Add User
+(2) Delete User
+(Q) Quit
 ```
 
-// @todo - continue working on this README
+output from the second `$menu->render()`
+```
+1) Add User
+2) Delete User
+Q) Quit
+```
