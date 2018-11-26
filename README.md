@@ -2,8 +2,8 @@
 # theroadbunch/command-menu
 A simple menu for symfony console commands  
   
-[![build status](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/badges/build.png?b=master)](https://scrutinizer-ci.com/g/danmcadams/mandrill-sdk/)
-[![scrutinzer quality score](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/danmcadams/mandrill-sdk/)
+[![build status](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/badges/build.png?b=master)](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/)
+[![scrutinzer quality score](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/)
 ![Code Coverage](https://scrutinizer-ci.com/g/The-Road-Bunch/command-menu/badges/coverage.png?b=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   
