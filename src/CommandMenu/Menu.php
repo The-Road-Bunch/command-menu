@@ -104,6 +104,8 @@ class Menu implements MenuInterface
     }
 
     /**
+     * Adds a title to the menu.
+     *
      * @param string $message
      */
     public function title(string $message): void

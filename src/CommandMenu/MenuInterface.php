@@ -56,6 +56,8 @@ interface MenuInterface
     public function setOptions(iterable $options): void;
 
     /**
+     * Adds a title to the menu.
+     *
      * @param string $message
      */
     public function title(string $message): void;
