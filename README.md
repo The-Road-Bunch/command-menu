@@ -4,7 +4,7 @@ A simple menu for symfony console commands
   
 [![Latest Stable Version](https://img.shields.io/packagist/v/theroadbunch/command-menu.svg)](https://packagist.org/packages/theroadbunch/command-menu)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Compatible Symfony Version](https://img.shields.io/badge/symfony-v2.7-green.svg)](https://symfony.com)
+[![Compatible Symfony Version](https://img.shields.io/badge/symfony%2Fconsole-v2.7-green.svg)](https://symfony.com)
   
 _a quick note:_   
 This README assumes you have an understanding of creating and running a console command in the symfony ecosystem
