@@ -24,6 +24,7 @@ class OptionBuilder
 {
     protected $name  = 'option_one';
     protected $label = 'Option One';
+    protected $selector;
 
     public static function create()
     {
@@ -42,8 +43,14 @@ class OptionBuilder
         return $this;
     }
 
+    public function withSelector(string $selector)
+    {
+        $this->selector = $selector;
+        return $this;
+    }
+
     public function build()
     {
-        return new Option($this->name, $this->label);
+        return new Option($this->name, $this->label, $this->selector);
     }
 }

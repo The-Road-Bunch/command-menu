@@ -30,14 +30,24 @@ class Option
     public $label;
 
     /**
+     * @var string|null
+     */
+    public $selector;
+
+    /**
      * Option constructor.
      *
-     * @param string $name
-     * @param string $label
+     * @param string      $name
+     * @param string      $label
+     * @param string|null $selector
      */
-    public function __construct(string $name, string $label)
+    public function __construct(string $name, string $label, string $selector)
     {
-        $this->name  = $name;
-        $this->label = $label;
+        if (empty($name) || empty($label)) {
+            throw new \InvalidArgumentException();
+        }
+        $this->name     = $name;
+        $this->label    = $label;
+        $this->selector = $selector;
     }
 }
