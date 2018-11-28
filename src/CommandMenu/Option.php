@@ -41,7 +41,7 @@ class Option
      * @param string      $label
      * @param string|null $selector
      */
-    public function __construct(string $name, string $label, string $selector)
+    public function __construct(string $name, string $label, string $selector = null)
     {
         if (empty($name) || empty($label)) {
             throw new \InvalidArgumentException();

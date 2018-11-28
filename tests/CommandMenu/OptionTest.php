@@ -33,6 +33,12 @@ class OptionTest extends TestCase
         $this->assertEquals($selector, $option->selector);
     }
 
+    public function testCreateOptionNoSelector()
+    {
+        $option = new Option('name', 'label');
+        $this->assertInstanceOf(Option::class, $option);
+    }
+
     public function testCreateWithEmptyNameThrowsInvalidArgumentException()
     {
         $this->expectException(\InvalidArgumentException::class);
