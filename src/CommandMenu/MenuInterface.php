@@ -41,11 +41,9 @@ interface MenuInterface
      * Add an option to the menu
      * If a selector is not provided, an incrementing integer will be assigned to the menu option
      *
-     * @param string      $name
-     * @param string      $label
-     * @param string|null $selector
+     * @param Option $option
      */
-    public function addOption(string $name, string $label, string $selector = null): void;
+    public function addOption(Option $option): void;
 
     /**
      * Set the menu options

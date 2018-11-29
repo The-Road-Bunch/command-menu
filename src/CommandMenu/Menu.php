@@ -78,13 +78,11 @@ class Menu implements MenuInterface
      * Add an option to the menu
      * If a selector is not provided, an incrementing integer will be assigned to the menu option
      *
-     * @param string      $name
-     * @param string      $label
-     * @param string|null $selector
+     * @param Option $option
      */
-    public function addOption(string $name, string $label, string $selector = null): void
+    public function addOption(Option $option): void
     {
-        $this->appendOption(new Option($name, $label), $selector);
+        $this->appendOption($option);
     }
 
     /**
@@ -99,6 +97,9 @@ class Menu implements MenuInterface
         $this->optionMap = [];
 
         foreach ($options as $option) {
+            if (!$option instanceof Option) {
+                throw new \InvalidArgumentException('Items in array must be an instance of Object');
+            }
             $this->appendOption($option);
         }
     }
@@ -156,17 +157,14 @@ class Menu implements MenuInterface
         return $this->select($response);
     }
 
-    private function appendOption($option, string $selector = null): void
+    private function appendOption(Option $option): void
     {
-        $this->validateOption($option);
-        $this->optionMap[$selector ?? $this->counter->next()] = $option;
+        $this->checkForDuplicates($option);
+        $this->optionMap[$option->selector ?? $this->counter->next()] = $option;
     }
 
-    private function validateOption($newOption): void
+    private function checkForDuplicates(Option $newOption): void
     {
-        if (!$newOption instanceof Option) {
-            throw new \InvalidArgumentException('Items in array must be an instance of Object');
-        }
         foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
                 throw new DuplicateOptionException();

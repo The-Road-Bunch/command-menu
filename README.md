@@ -29,6 +29,7 @@ Creating, rendering, and using a menu in your symfony console command
 
 // ...
 use RoadBunch\CommandMenu\Menu;
+use RoadBunch\CommandMenu\Option;
 
 // ...
 
@@ -43,10 +44,10 @@ public function execute(InputInterface $input, OutputInterface $output)
     // add options Menu::addOption(name, label)
     // options are displayed in the order they are added
     // sequential numbers will be created for selecting options
-    $menu->addOption('add', 'Add User');
-    $menu->addOption('delete', 'Delete User');
+    $menu->addOption(new Option('add', 'Add User'));
+    $menu->addOption(new Option('delete', 'Delete User'));
     // add an option with a custom selector
-    $menu->addOption('quit', 'Quit', 'Q');        
+    $menu->addOption(new Option('quit', 'Quit', 'Q'));
    
     // render the menu
     $menu->render();
