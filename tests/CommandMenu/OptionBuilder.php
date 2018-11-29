@@ -22,9 +22,9 @@ use RoadBunch\CommandMenu\Option;
  */
 class OptionBuilder
 {
-    protected $name  = 'option_one';
-    protected $label = 'Option One';
-    protected $selector;
+    protected $name     = 'option_one';
+    protected $label    = 'Option One';
+    protected $selector = '';
 
     public static function create()
     {

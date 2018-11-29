@@ -81,7 +81,7 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
-    public function testSetOptions()
+    public function testSetOptionsClearsPreviousOptionsAndSetsNewOptions()
     {
         $oldOption  = OptionBuilder::create()->build();
         $newOptions = $this->createRandomOptions(3);

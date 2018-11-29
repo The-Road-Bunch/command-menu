@@ -11,6 +11,7 @@
 
 namespace RoadBunch\Tests\CommandMenu;
 
+use RoadBunch\CommandMenu\Exception\EmptySelectorException;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 
@@ -37,6 +38,7 @@ class OptionTest extends TestCase
     {
         $option = new Option('name', 'label');
         $this->assertInstanceOf(Option::class, $option);
+        $this->assertEquals('', $option->selector);
     }
 
     public function testCreateWithEmptyNameThrowsInvalidArgumentException()

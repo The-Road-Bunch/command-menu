@@ -160,7 +160,7 @@ class Menu implements MenuInterface
     private function appendOption(Option $option): void
     {
         $this->checkForDuplicates($option);
-        $this->optionMap[$option->selector ?? $this->counter->next()] = $option;
+        $this->addToSelectorMap($option);
     }
 
     private function checkForDuplicates(Option $newOption): void
@@ -177,5 +177,11 @@ class Menu implements MenuInterface
         if ($this->title) {
             $this->io->section($this->title);
         }
+    }
+
+    private function addToSelectorMap(Option $option)
+    {
+        $selector = empty($option->selector) ? $this->counter->next() : $option->selector;
+        $this->optionMap[$selector] = $option;
     }
 }
