@@ -1,7 +1,15 @@
 # theroadbunch/command-menu
 
 ## upcoming releases
+#### wish list
+- ability to set the start number of the incremental selectors
 - Update to symfony/console 3.4 or 4.1, depending on adoption of symfony 4
+
+## v0.1.0
+NOV 30, 2018 - 11:00 CST
+### Notes
+- Menu::addOption() now takes an Option instead of name, label, and selector
+- Option now accepts a selector and checks for empty names and labels
 
 ## v0.0.1
 NOV 23, 2018 - 22:57 CST
