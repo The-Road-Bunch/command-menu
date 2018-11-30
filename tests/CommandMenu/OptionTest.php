@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Class OptionTest
  *
+ * @author  Dan McAdams
  * @package RoadBunch\Tests\CommandMenu
  */
 class OptionTest extends TestCase
