@@ -11,7 +11,6 @@
 
 namespace RoadBunch\Tests\CommandMenu;
 
-use RoadBunch\CommandMenu\Exception\EmptySelectorException;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 
