@@ -81,7 +81,7 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
-    public function testSetOptionsClearsPreviousOptionsAndSetsNewOptions()
+    public function testSetOptions()
     {
         $oldOption  = OptionBuilder::create()->build();
         $newOptions = $this->createRandomOptions(3);
@@ -208,6 +208,17 @@ class MenuTest extends TestCase
         $this->assertNull($this->menu->select('fake selection'));
     }
 
+    public function testMakeSelectionIsCaseInsensitive()
+    {
+        $selector          = 'q';
+        $upperCaseSelector = strtoupper($selector);
+        $option            = OptionBuilder::create()->withSelector($selector)->build();
+
+        $this->menu->addOption($option);
+        $this->assertEquals($option->name, $this->menu->select($selector));
+        $this->assertEquals($option->name, $this->menu->select($upperCaseSelector));
+    }
+
     public function testSelectFromUserInput()
     {
         $expectedSelector = 'selector';
@@ -217,7 +228,7 @@ class MenuTest extends TestCase
 
         // creating a spy styler, this is how we ask the user for input,
         // we want to fake that part of the process
-        $style = new TestSymfonyStyle($this->input, $this->output);
+        $style                   = new TestSymfonyStyle($this->input, $this->output);
         $style->expectedSelector = $expectedSelector;
 
         // replace the style created in the class so we can spy on it

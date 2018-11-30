@@ -136,8 +136,11 @@ class Menu implements MenuInterface
      */
     public function select($selection): ?string
     {
-        if (!empty($this->optionMap[$selection])) {
-            return $this->optionMap[$selection]->name;
+        $lcaseMap  = array_change_key_case($this->optionMap, CASE_LOWER);
+        $selection = strtolower($selection);
+
+        if (!empty($lcaseMap[$selection])) {
+            return $lcaseMap[$selection]->name;
         }
         return null;
     }
@@ -181,7 +184,7 @@ class Menu implements MenuInterface
 
     private function addToSelectorMap(Option $option)
     {
-        $selector = empty($option->selector) ? $this->counter->next() : $option->selector;
+        $selector                   = empty($option->selector) ? $this->counter->next() : $option->selector;
         $this->optionMap[$selector] = $option;
     }
 }
