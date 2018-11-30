@@ -313,9 +313,4 @@ class TestMenu extends Menu
     {
         return $this->wrapper;
     }
-
-    public function getOutput()
-    {
-        return $this->output;
-    }
 }
