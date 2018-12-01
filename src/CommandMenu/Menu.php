@@ -136,11 +136,13 @@ class Menu implements MenuInterface
      */
     public function select($selection): ?string
     {
-        $lcaseMap  = array_change_key_case($this->optionMap, CASE_LOWER);
-        $selection = strtolower($selection);
+        // to make the menu selections case insensitive we'll convert all of 
+        // the selector keys and the user's input to lower case then compare them
+        $loweredKeyMap = array_change_key_case($this->optionMap, CASE_LOWER);
+        $selection     = strtolower($selection);
 
-        if (!empty($lcaseMap[$selection])) {
-            return $lcaseMap[$selection]->name;
+        if (!empty($loweredKeyMap[$selection])) {
+            return $loweredKeyMap[$selection]->name;
         }
         return null;
     }
