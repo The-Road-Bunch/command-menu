@@ -67,6 +67,7 @@ interface MenuInterface
 
     /**
      * Check the user input against the menu options
+     * returns the name of the selected menu option
      *
      * @param $selection
      *
@@ -84,5 +85,5 @@ interface MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function selectFromUserInput(string $prompt): ?string;
+    public function promptForSelection(string $prompt): ?string;
 }
