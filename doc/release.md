@@ -3,6 +3,7 @@
 ## upcoming releases
 #### wish list
 - ability to set the start number of the incremental selectors
+- ability to create and inject a custom incremental selector
 - Update to symfony/console 3.4 or 4.1, depending on adoption of symfony 4
 
 ## v0.1.0
