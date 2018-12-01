@@ -18,6 +18,7 @@ use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 use RoadBunch\Wrapper\Wrapper;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -34,9 +35,8 @@ class MenuTest extends TestCase
 
     /** @var TestOutput|OutputInterface $output */
     protected $output;
-    /** @var TestInput|InputInterface $input */
+    /** @var InputInterface $input */
     protected $input;
-    protected $io;
     /** @var Menu|TestMenu $menu */
     protected $menu;
     /** @var Option[] */
@@ -44,8 +44,8 @@ class MenuTest extends TestCase
 
     protected function setUp()
     {
+        $this->input  = $this->createMock(Input::class);
         $this->output = new TestOutput();
-        $this->input  = new TestInput();
         $this->menu   = new TestMenu($this->input, $this->output);
 
         // create some options for our menu
@@ -237,12 +237,12 @@ class MenuTest extends TestCase
         $this->menu->addOption($expectedOption);
 
         $this->render();
-        $result = $this->menu->selectFromUserInput();
+        $result = $this->menu->promptForSelection();
 
         $this->assertEquals($defaultPrompt, $style->question);
         $this->assertEquals($result, $expectedOption->name);
 
-        $result = $this->menu->selectFromUserInput($customPrompt);
+        $result = $this->menu->promptForSelection($customPrompt);
 
         $this->assertEquals($customPrompt, $style->question);
         $this->assertEquals($result, $expectedOption->name);
