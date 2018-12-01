@@ -53,7 +53,7 @@ public function execute(InputInterface $input, OutputInterface $output)
     $menu->render();
     
     // prompt the user to make a selection
-    $selection = $menu->selectFromUserInput('Please make a selection'); 
+    $selection = $menu->promptForSelection(); 
 }   
 ```
 Output
