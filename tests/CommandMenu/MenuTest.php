@@ -11,7 +11,6 @@
 
 namespace RoadBunch\Tests\CommandMenu;
 
-
 use InvalidArgumentException;
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
 use RoadBunch\CommandMenu\Menu;
@@ -20,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 use RoadBunch\Wrapper\Wrapper;
 use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -31,8 +31,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class MenuTest extends TestCase
 {
-    const DEFAULT_DELIMITER = ') ';
-
     /** @var TestOutput|OutputInterface $output */
     protected $output;
     /** @var InputInterface $input */
@@ -312,5 +310,37 @@ class TestMenu extends Menu
     public function getWrapper()
     {
         return $this->wrapper;
+    }
+}
+
+class TestOutput extends Output
+{
+    // we'll spy on the lines being provided here
+    public $output = '';
+
+    /**
+     * clear the output here because it's just a string we're storing in memory
+     * for the test. Actual output doesn't get buffered like this, so we're really
+     * testing that the menu produces the same result every time we render it.
+     */
+    public function clear()
+    {
+        $this->output = '';
+    }
+
+    public function write($messages, $newline = false, $options = 0)
+    {
+    }
+
+    public function writeln($messages, $options = 0)
+    {
+        foreach ((array) $messages as $message) {
+            $this->doWrite($message, PHP_EOL);
+        }
+    }
+
+    protected function doWrite($message, $newline)
+    {
+        $this->output .= $message . $newline;
     }
 }
