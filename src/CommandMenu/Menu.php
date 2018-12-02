@@ -78,11 +78,13 @@ class Menu implements MenuInterface
      * Add an option to the menu
      * If a selector is not provided, an incrementing integer will be assigned to the menu option
      *
-     * @param Option $option
+     * @param string $name
+     * @param string $label
+     * @param string $selector
      */
-    public function addOption(Option $option): void
+    public function addOption(string $name, string $label, string $selector = ''): void
     {
-        $this->appendOption($option);
+        $this->appendOption(new Option($name, $label, $selector));
     }
 
     /**
