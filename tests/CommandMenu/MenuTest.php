@@ -13,6 +13,7 @@ namespace RoadBunch\Tests\CommandMenu;
 
 use InvalidArgumentException;
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\CommandMenu\Exception\DuplicateSelectorException;
 use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
@@ -77,6 +78,14 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withName(uniqid())->build(), OptionBuilder::create()->build()];
         // different label, same name
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
+    }
+
+    public function testAddDuplicateSelector()
+    {
+        $this->expectException(DuplicateSelectorException::class);
+
+        $this->menu->addOption('one', 'One', 'o');
+        $this->menu->addOption('two', 'Two', 'o');
     }
 
     public function testSetOptions()

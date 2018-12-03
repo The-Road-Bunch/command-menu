@@ -12,6 +12,7 @@
 namespace RoadBunch\CommandMenu;
 
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\CommandMenu\Exception\DuplicateSelectorException;
 use RoadBunch\Counter\NumberCounter;
 use RoadBunch\Wrapper\NullWrapper;
 use RoadBunch\Wrapper\WrapperInterface;
@@ -172,6 +173,9 @@ class Menu implements MenuInterface
 
     private function checkForDuplicates(Option $newOption): void
     {
+        if (!empty($this->optionMap[$newOption->selector])) {
+            throw new DuplicateSelectorException('An option has been already been provided with selector: '.$newOption->selector);
+        }
         foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
                 throw new DuplicateOptionException();
