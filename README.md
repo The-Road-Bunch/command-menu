@@ -14,7 +14,7 @@ This README assumes you have an understanding of creating and running a console 
 2. [Installation](#installation)
 3. [Usage](#usage)  
     a. [Basic Usage](#basic-usage)    
-    b. [Using Selector Wrappers](#selector-wrappers)  
+    b. [Selectors](doc/Selectors.md)  
 4. [License](LICENSE)
 
 ### <a name="installation">Install using composer</a> <sup><small>[[?]](https://getcomposer.org)</a></small></sup>
@@ -34,27 +34,26 @@ use RoadBunch\CommandMenu\Option;
 // ...
 
 public function execute(InputInterface $input, OutputInterface $output)
-{
+{      
     // create the menu
     $menu = new Menu($input, $output);
     
     // optional title
     $menu->title('Options');
     
-    // add options Menu::addOption(name, label)
-    // options are displayed in the order they are added
-    // sequential numbers will be created for selecting options
-    $menu->addOption(new Option('add', 'Add User'));
-    $menu->addOption(new Option('delete', 'Delete User'));
-    // add an option with a custom selector
-    $menu->addOption(new Option('quit', 'Quit', 'Q'));
-   
+    // add options
+    $menu->addOption('add', 'Add User');
+    $menu->addOption('delete', 'Delete User');
+    $menu->addOption('quit', 'Quit');
+    
     // render the menu
     $menu->render();
-    
+        
     // prompt the user to make a selection
-    $selection = $menu->promptForSelection(); 
-}   
+    $selection = $menu->promptForSelection();
+    
+    // do work
+}
 ```
 Output
 ```
@@ -63,50 +62,11 @@ Options
 
 1 Add User
 2 Delete User
-Q Quit
+3 Quit
 
 Please make a selection:
 > |
 ```
-If the user selects `2` then `selectFromUserInput()` will return `"delete"`.  
-If the user selects `Q` then `selectFromUserInput()` will return `"quit"`
-
-### <a name="selector-wrappers">Using Selector Wrappers</a>
-
-Add a wrapper for option selectors
-```php
-<?php
-
-use RoadBunch\CommandMenu\Menu;
-use RoadBunch\Wrapper\ParenthesisWrapper;
-use RoadBunch\Wrapper\Wrapper;
-// ..
-
-public function execute(InputInterface $input, OutputInterface $output)
-{
-    $menu = new Menu($input, $output);
-    
-    // add options
-    
-    // add a wrapper from the library
-    $menu->setSelectorWrapper(new ParenthesisWrapper());
-    $menu->render();
-    
-    // add a custom wrapper
-    $menu->setSelectorWrapper(new Wrapper('', ')'));
-    $menu->render();
-}
-```
-output from the first `$menu->render()`
-```
-(1) Add User
-(2) Delete User
-(Q) Quit
-```
-
-output from the second `$menu->render()`
-```
-1) Add User
-2) Delete User
-Q) Quit
-```
+If the user selects `1` then `promptForSelection()` will return `"add"`, `2` will return `"delete"`, and 
+`3` will return `"quit"`  
+In the event a user selects something other than a given selector, `promptForSelection()` will return `null`
