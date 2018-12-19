@@ -11,6 +11,7 @@ Changes
 - `Menu::selectFromUserInput()` has been renamed to `Menu::promptForSelection()`
 - revert `Menu::addOption()` now takes individual parameters instead of the `Option` object. Currently we're returning 
 `(string) name` and it makes more sense to add an option with strings. This may change again in the future  
+- add `Menu::renderWithPrompt()` which calls `Menu::render()` and then `Menu::promptForSelection()`
   
 Fixes  
 

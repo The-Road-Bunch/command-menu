@@ -96,8 +96,7 @@ class Menu implements MenuInterface
      */
     public function setOptions(iterable $options): void
     {
-        $this->counter->reset();
-        $this->optionMap = [];
+        $this->reset();
 
         foreach ($options as $option) {
             if (!$option instanceof Option) {
@@ -127,6 +126,13 @@ class Menu implements MenuInterface
             $selector = array_search($option, $this->optionMap);
             $this->io->writeln(sprintf('%s %s', $this->wrapper->wrap($selector), $option->label));
         }
+    }
+
+    public function renderWithPrompt(): ?string
+    {
+        $this->render();
+        $this->io->writeln('');
+        return $this->promptForSelection();
     }
 
     /**
@@ -185,7 +191,7 @@ class Menu implements MenuInterface
 
     private function renderTitle(): void
     {
-        if ($this->title) {
+        if (!empty($this->title)) {
             $this->io->section($this->title);
         }
     }
@@ -194,5 +200,15 @@ class Menu implements MenuInterface
     {
         $selector                   = empty($option->selector) ? $this->counter->next() : $option->selector;
         $this->optionMap[$selector] = $option;
+    }
+
+    /**
+     * Resets counters and options map to 0,
+     * Like you just created a new menu, but with the same input, output, and title if any
+     */
+    private function reset(): void
+    {
+        $this->counter->reset();
+        $this->optionMap = [];
     }
 }

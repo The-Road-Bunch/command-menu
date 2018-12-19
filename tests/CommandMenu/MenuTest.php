@@ -32,6 +32,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class MenuTest extends TestCase
 {
+    const DEFAULT_PROMPT = 'Please make a selection';
     /** @var TestOutput|OutputInterface $output */
     protected $output;
     /** @var InputInterface $input */
@@ -219,32 +220,45 @@ class MenuTest extends TestCase
         $this->assertEquals($option->name, $this->menu->select($upperCaseSelector));
     }
 
-    public function testSelectFromUserInput()
+    /**
+     * @depends testAddOption
+     */
+    public function testPromptForSelection()
     {
-        $option   = OptionBuilder::create()->withSelector('selector')->build();
-        $defaultPrompt    = 'Please make a selection';
-        $customPrompt     = 'Yo, make a pick';
-
-        // creating a spy styler, this is how we ask the user for input,
-        // we want to fake that part of the process
-        $style                   = new TestSymfonyStyle($this->input, $this->output);
-        $style->expectedSelector = $option->selector;
-
-        // replace the style created in the class so we can spy on it
-        $this->menu->injectSymfonyStyle($style);
-        $this->menu->setOptions($this->options);
+        $option = OptionBuilder::create()->withSelector('1')->build();
         $this->menu->addOption($option->name, $option->label, $option->selector);
 
-        $this->render();
+        // create a mock styler for simulating asking a question
+        $style = new TestSymfonyStyle($this->input, $this->output);
+        // expected selection from the user (this is the input being faked)
+        $style->expectedSelector = $option->selector;
+        $this->menu->injectSymfonyStyle($style);
+
         $result = $this->menu->promptForSelection();
 
-        $this->assertEquals($defaultPrompt, $style->question);
-        $this->assertEquals($result, $option->name);
+        $this->assertEquals(self::DEFAULT_PROMPT, $style->question);
+        $this->assertEquals($option->name, $result);
+    }
 
-        $result = $this->menu->promptForSelection($customPrompt);
+    /**
+     * @depends testAddOption
+     * @depends testPromptForSelection
+     */
+    public function testRenderWithPrompt()
+    {
+        $option = OptionBuilder::create()->withSelector('1')->build();
+        $this->menu->addOption($option->name, $option->label, $option->selector);
 
-        $this->assertEquals($customPrompt, $style->question);
-        $this->assertEquals($result, $option->name);
+        // create a mock styler for simulating asking a question
+        $style = new TestSymfonyStyle($this->input, $this->output);
+        // expected selection from the user (this is the input being faked)
+        $style->expectedSelector = $option->selector;
+        $this->menu->injectSymfonyStyle($style);
+
+        $result = $this->menu->renderWithPrompt();
+
+        $this->assertEquals(self::DEFAULT_PROMPT, $style->question);
+        $this->assertEquals($option->name, $result);
     }
 
     /**
@@ -291,6 +305,7 @@ class TestSymfonyStyle extends SymfonyStyle
 
     public function ask($question, $default = null, $validator = null)
     {
+        $this->writeln($question);
         $this->question = $question;
         return $this->expectedSelector;
     }
