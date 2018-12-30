@@ -14,7 +14,8 @@ This README assumes you have an understanding of creating and running a console 
 2. [Installation](#installation)
 3. [Usage](#usage)  
     a. [Basic Usage](#basic-usage)    
-    b. [Selectors](doc/Selectors.md)  
+    b. [Selectors](doc/Selectors.md) 
+    c. [Wrappers](doc/Selectors.md#using-wrappers-for-selectors) 
 4. [License](LICENSE)
 
 ### <a name="installation">Install using composer</a> <sup><small>[[?]](https://getcomposer.org)</a></small></sup>
