@@ -32,9 +32,9 @@ Output
 2 Delete User
 q Quit
 ```
-note: custom selectors are case insensitive, so providing `Menu::select()` with `"q"` or `"Q"` will produce the same results
+_**note:**_ custom selectors are case insensitive, so providing `Menu::select()` with `"q"` or `"Q"` will produce the same results
 
-### <a name="selector-wrappers">Using Wrappers For Selectors</a>
+### <a name="selector-wrappers">Selector Wrappers</a>
 
 By default, the only thing separating the option labels from the selectors are a space. 
 You can change this by adding a custom selector wrapper. There are several provided wrappers for you to use, but if
