@@ -11,14 +11,16 @@
 
 namespace RoadBunch\Tests\CommandMenu;
 
-
 use InvalidArgumentException;
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\CommandMenu\Exception\DuplicateSelectorException;
 use RoadBunch\CommandMenu\Menu;
 use RoadBunch\CommandMenu\Option;
 use PHPUnit\Framework\TestCase;
 use RoadBunch\Wrapper\Wrapper;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -30,13 +32,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class MenuTest extends TestCase
 {
-    const DEFAULT_DELIMITER = ') ';
-
+    const DEFAULT_PROMPT = 'Please make a selection';
     /** @var TestOutput|OutputInterface $output */
     protected $output;
-    /** @var TestInput|InputInterface $input */
+    /** @var InputInterface $input */
     protected $input;
-    protected $io;
     /** @var Menu|TestMenu $menu */
     protected $menu;
     /** @var Option[] */
@@ -44,8 +44,8 @@ class MenuTest extends TestCase
 
     protected function setUp()
     {
+        $this->input  = $this->createMock(Input::class);
         $this->output = new TestOutput();
-        $this->input  = new TestInput();
         $this->menu   = new TestMenu($this->input, $this->output);
 
         // create some options for our menu
@@ -55,7 +55,7 @@ class MenuTest extends TestCase
     public function testAddOption()
     {
         $option = OptionBuilder::create()->build();
-        $this->menu->addOption($option);
+        $this->menu->addOption($option->name, $option->label);
 
         $this->assertTrue(in_array($option, $this->menu->getOptions()));
     }
@@ -67,8 +67,8 @@ class MenuTest extends TestCase
     {
         $this->expectException(DuplicateOptionException::class);
 
-        $this->menu->addOption($optionOne);
-        $this->menu->addOption($optionTwo);
+        $this->menu->addOption($optionOne->name, $optionOne->label);
+        $this->menu->addOption($optionTwo->name, $optionTwo->label);
     }
 
     public function duplicateOptionProvider(): \Generator
@@ -81,12 +81,20 @@ class MenuTest extends TestCase
         yield [OptionBuilder::create()->withLabel(uniqid())->build(), OptionBuilder::create()->build()];
     }
 
+    public function testAddDuplicateSelector()
+    {
+        $this->expectException(DuplicateSelectorException::class);
+
+        $this->menu->addOption('one', 'One', 'o');
+        $this->menu->addOption('two', 'Two', 'o');
+    }
+
     public function testSetOptions()
     {
         $oldOption  = OptionBuilder::create()->build();
         $newOptions = $this->createRandomOptions(3);
 
-        $this->menu->addOption($oldOption);
+        $this->menu->addOption($oldOption->name, $oldOption->label);
         $this->menu->setOptions($newOptions);
 
         $this->render();
@@ -112,7 +120,7 @@ class MenuTest extends TestCase
                                  ->withSelector($selector)
                                  ->build();
 
-        $this->menu->addOption($option);
+        $this->menu->addOption($option->name, $option->label, $option->selector);
         $this->render();
 
         $this->assertEquals($option->name, $this->menu->select($selector));
@@ -122,15 +130,10 @@ class MenuTest extends TestCase
     {
         $wrapper  = new Wrapper('<', '>');
         $selector = 'd';
+        $option   = OptionBuilder::create()->withSelector($selector)->build();
 
         $this->menu->setSelectorWrapper($wrapper);
-        $this->menu->addOption(
-            OptionBuilder::create()
-                         ->withName('dee')
-                         ->withLabel('Dee')
-                         ->withSelector($selector)
-                         ->build()
-        );
+        $this->menu->addOption($option->name, $option->label, $option->selector);
         $this->render();
 
         $this->assertContains(sprintf('%s', $wrapper->wrap($selector)), $this->output->output);
@@ -142,13 +145,11 @@ class MenuTest extends TestCase
      * @example 1 Option
      * @example 2 A different Option
      *
-     * @depends testAddOption
+     * @depends testSetOptions
      */
     public function testRenderMenu()
     {
-        foreach ($this->options as $option) {
-            $this->menu->addOption($option);
-        }
+        $this->menu->setOptions($this->options);
         $this->menu->render();
 
         // turn the output into an array we can loop through line by line
@@ -214,38 +215,50 @@ class MenuTest extends TestCase
         $upperCaseSelector = strtoupper($selector);
         $option            = OptionBuilder::create()->withSelector($selector)->build();
 
-        $this->menu->addOption($option);
+        $this->menu->addOption($option->name, $option->label, $option->selector);
         $this->assertEquals($option->name, $this->menu->select($selector));
         $this->assertEquals($option->name, $this->menu->select($upperCaseSelector));
     }
 
-    public function testSelectFromUserInput()
+    /**
+     * @depends testAddOption
+     */
+    public function testPromptForSelection()
     {
-        $expectedSelector = 'selector';
-        $expectedOption   = OptionBuilder::create()->withSelector($expectedSelector)->build();
-        $defaultPrompt    = 'Please make a selection';
-        $customPrompt     = 'Yo, make a pick';
+        $option = OptionBuilder::create()->withSelector('1')->build();
+        $this->menu->addOption($option->name, $option->label, $option->selector);
 
-        // creating a spy styler, this is how we ask the user for input,
-        // we want to fake that part of the process
-        $style                   = new TestSymfonyStyle($this->input, $this->output);
-        $style->expectedSelector = $expectedSelector;
-
-        // replace the style created in the class so we can spy on it
+        // create a mock styler for simulating asking a question
+        $style = new TestSymfonyStyle($this->input, $this->output);
+        // expected selection from the user (this is the input being faked)
+        $style->expectedSelector = $option->selector;
         $this->menu->injectSymfonyStyle($style);
-        $this->menu->setOptions($this->options);
-        $this->menu->addOption($expectedOption);
 
-        $this->render();
-        $result = $this->menu->selectFromUserInput();
+        $result = $this->menu->promptForSelection();
 
-        $this->assertEquals($defaultPrompt, $style->question);
-        $this->assertEquals($result, $expectedOption->name);
+        $this->assertEquals(self::DEFAULT_PROMPT, $style->question);
+        $this->assertEquals($option->name, $result);
+    }
 
-        $result = $this->menu->selectFromUserInput($customPrompt);
+    /**
+     * @depends testAddOption
+     * @depends testPromptForSelection
+     */
+    public function testRenderWithPrompt()
+    {
+        $option = OptionBuilder::create()->withSelector('1')->build();
+        $this->menu->addOption($option->name, $option->label, $option->selector);
 
-        $this->assertEquals($customPrompt, $style->question);
-        $this->assertEquals($result, $expectedOption->name);
+        // create a mock styler for simulating asking a question
+        $style = new TestSymfonyStyle($this->input, $this->output);
+        // expected selection from the user (this is the input being faked)
+        $style->expectedSelector = $option->selector;
+        $this->menu->injectSymfonyStyle($style);
+
+        $result = $this->menu->renderWithPrompt();
+
+        $this->assertEquals(self::DEFAULT_PROMPT, $style->question);
+        $this->assertEquals($option->name, $result);
     }
 
     /**
@@ -292,6 +305,7 @@ class TestSymfonyStyle extends SymfonyStyle
 
     public function ask($question, $default = null, $validator = null)
     {
+        $this->writeln($question);
         $this->question = $question;
         return $this->expectedSelector;
     }
@@ -312,5 +326,37 @@ class TestMenu extends Menu
     public function getWrapper()
     {
         return $this->wrapper;
+    }
+}
+
+class TestOutput extends Output
+{
+    // we'll spy on the lines being provided here
+    public $output = '';
+
+    /**
+     * clear the output here because it's just a string we're storing in memory
+     * for the test. Actual output doesn't get buffered like this, so we're really
+     * testing that the menu produces the same result every time we render it.
+     */
+    public function clear()
+    {
+        $this->output = '';
+    }
+
+    public function write($messages, $newline = false, $options = 0)
+    {
+    }
+
+    public function writeln($messages, $options = 0)
+    {
+        foreach ((array) $messages as $message) {
+            $this->doWrite($message, PHP_EOL);
+        }
+    }
+
+    protected function doWrite($message, $newline)
+    {
+        $this->output .= $message . $newline;
     }
 }

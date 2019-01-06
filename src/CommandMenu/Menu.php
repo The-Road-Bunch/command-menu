@@ -12,6 +12,7 @@
 namespace RoadBunch\CommandMenu;
 
 use RoadBunch\CommandMenu\Exception\DuplicateOptionException;
+use RoadBunch\CommandMenu\Exception\DuplicateSelectorException;
 use RoadBunch\Counter\NumberCounter;
 use RoadBunch\Wrapper\NullWrapper;
 use RoadBunch\Wrapper\WrapperInterface;
@@ -78,11 +79,13 @@ class Menu implements MenuInterface
      * Add an option to the menu
      * If a selector is not provided, an incrementing integer will be assigned to the menu option
      *
-     * @param Option $option
+     * @param string $name
+     * @param string $label
+     * @param string $selector
      */
-    public function addOption(Option $option): void
+    public function addOption(string $name, string $label, string $selector = ''): void
     {
-        $this->appendOption($option);
+        $this->appendOption(new Option($name, $label, $selector));
     }
 
     /**
@@ -93,8 +96,7 @@ class Menu implements MenuInterface
      */
     public function setOptions(iterable $options): void
     {
-        $this->counter->reset();
-        $this->optionMap = [];
+        $this->reset();
 
         foreach ($options as $option) {
             if (!$option instanceof Option) {
@@ -126,6 +128,13 @@ class Menu implements MenuInterface
         }
     }
 
+    public function renderWithPrompt(): ?string
+    {
+        $this->render();
+        $this->io->writeln('');
+        return $this->promptForSelection();
+    }
+
     /**
      * Check the user input against the menu options
      *
@@ -136,11 +145,13 @@ class Menu implements MenuInterface
      */
     public function select($selection): ?string
     {
-        $lcaseMap  = array_change_key_case($this->optionMap, CASE_LOWER);
-        $selection = strtolower($selection);
+        // to make the menu selections case insensitive we'll convert all of 
+        // the selector keys and the user's input to lower case then compare them
+        $loweredKeyMap = array_change_key_case($this->optionMap, CASE_LOWER);
+        $selection     = strtolower($selection);
 
-        if (!empty($lcaseMap[$selection])) {
-            return $lcaseMap[$selection]->name;
+        if (!empty($loweredKeyMap[$selection])) {
+            return $loweredKeyMap[$selection]->name;
         }
         return null;
     }
@@ -154,7 +165,7 @@ class Menu implements MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function selectFromUserInput(string $prompt = 'Please make a selection'): ?string
+    public function promptForSelection(string $prompt = 'Please make a selection'): ?string
     {
         $response = $this->io->ask($prompt);
         return $this->select($response);
@@ -168,6 +179,9 @@ class Menu implements MenuInterface
 
     private function checkForDuplicates(Option $newOption): void
     {
+        if (!empty($this->optionMap[$newOption->selector])) {
+            throw new DuplicateSelectorException('An option has been already been provided with selector: '.$newOption->selector);
+        }
         foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
                 throw new DuplicateOptionException();
@@ -177,7 +191,7 @@ class Menu implements MenuInterface
 
     private function renderTitle(): void
     {
-        if ($this->title) {
+        if (!empty($this->title)) {
             $this->io->section($this->title);
         }
     }
@@ -186,5 +200,15 @@ class Menu implements MenuInterface
     {
         $selector                   = empty($option->selector) ? $this->counter->next() : $option->selector;
         $this->optionMap[$selector] = $option;
+    }
+
+    /**
+     * Resets counters and options map to 0,
+     * Like you just created a new menu, but with the same input, output, and title if any
+     */
+    private function reset(): void
+    {
+        $this->counter->reset();
+        $this->optionMap = [];
     }
 }

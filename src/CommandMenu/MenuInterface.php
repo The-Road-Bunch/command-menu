@@ -41,9 +41,11 @@ interface MenuInterface
      * Add an option to the menu
      * If a selector is not provided, an incrementing integer will be assigned to the menu option
      *
-     * @param Option $option
+     * @param string $name
+     * @param string $label
+     * @param string $selector
      */
-    public function addOption(Option $option): void;
+    public function addOption(string $name, string $label, string $selector): void;
 
     /**
      * Set the menu options
@@ -67,6 +69,7 @@ interface MenuInterface
 
     /**
      * Check the user input against the menu options
+     * returns the name of the selected menu option
      *
      * @param $selection
      *
@@ -84,5 +87,5 @@ interface MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function selectFromUserInput(string $prompt): ?string;
+    public function promptForSelection(string $prompt): ?string;
 }
