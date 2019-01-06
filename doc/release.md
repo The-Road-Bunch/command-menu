@@ -6,19 +6,15 @@
 - ability to create and inject a custom incremental selector
 - ability to shuffle options
 
-#### v0.2.0
-Changes  
+## v0.2.0
+### Changes  
 - `Menu::selectFromUserInput()` has been renamed to `Menu::promptForSelection()`
-- revert `Menu::addOption()` now takes individual parameters instead of the `Option` object. Currently we're returning 
+- `Menu::addOption()` now takes individual parameters instead of the `Option` object. Currently we're returning 
 `(string) name` and it makes more sense to add an option with strings. This may change again in the future  
 - add `Menu::renderWithPrompt()` which calls `Menu::render()` and then `Menu::promptForSelection()`
-  
-Fixes  
-
+### Fixes  
 - Duplicator option selectors are no longer allowed
-  
-Notes  
-
+### Notes  
 - The current symfony/console version is 2.7, this 'release' is not currently suggested for production, but is fine
 if you haven't quite upgraded yet.
 
