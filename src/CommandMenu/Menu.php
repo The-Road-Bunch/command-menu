@@ -43,6 +43,9 @@ class Menu implements MenuInterface
     /** @var string $title */
     protected $title;
 
+    /** @var string $defaultPrompt */
+    protected $defaultPrompt = 'Please make a selection';
+
     /**
      * Menu constructor.
      *
@@ -58,15 +61,6 @@ class Menu implements MenuInterface
 
     /**
      * Wrap menu selectors, eg. (q) or [q]
-     *
-     * @example
-     *  Using new Wrapper('', ')');
-     *
-     * // output
-     *
-     * 1) Option
-     * 2) Option
-     * 3) Option
      *
      * @param WrapperInterface $wrapper
      */
@@ -122,17 +116,24 @@ class Menu implements MenuInterface
     public function render(): void
     {
         $this->renderTitle();
-        foreach ($this->optionMap as $option) {
-            $selector = array_search($option, $this->optionMap);
+        foreach ($this->optionMap as $selector => $option) {
             $this->io->writeln(sprintf('%s %s', $this->wrapper->wrap($selector), $option->label));
         }
     }
 
-    public function renderWithPrompt(): ?string
+    /**
+     * Render the menu and prompt the user for a selection
+     *
+     * @param string $prompt
+     *
+     * @return string   the name of the matching option if a selection was made
+     * @return null     if no option matches the selection
+     */
+    public function renderWithPrompt(string $prompt = ''): ?string
     {
         $this->render();
         $this->io->writeln('');
-        return $this->promptForSelection();
+        return $this->promptForSelection($prompt);
     }
 
     /**
@@ -150,10 +151,7 @@ class Menu implements MenuInterface
         $loweredKeyMap = array_change_key_case($this->optionMap, CASE_LOWER);
         $selection     = strtolower($selection);
 
-        if (!empty($loweredKeyMap[$selection])) {
-            return $loweredKeyMap[$selection]->name;
-        }
-        return null;
+        return empty($loweredKeyMap[$selection]) ? null : $loweredKeyMap[$selection]->name;
     }
 
     /**
@@ -165,9 +163,9 @@ class Menu implements MenuInterface
      * @return string   the name of the matching option if a selection was made
      * @return null     if no option matches the selection
      */
-    public function promptForSelection(string $prompt = 'Please make a selection'): ?string
+    public function promptForSelection(string $prompt = ''): ?string
     {
-        $response = $this->io->ask($prompt);
+        $response = $this->io->ask(empty($prompt) ? $this->defaultPrompt : $prompt);
         return $this->select($response);
     }
 
@@ -180,7 +178,8 @@ class Menu implements MenuInterface
     private function checkForDuplicates(Option $newOption): void
     {
         if (!empty($this->optionMap[$newOption->selector])) {
-            throw new DuplicateSelectorException('An option has been already been provided with selector: '.$newOption->selector);
+            $message = sprintf('An option has been already been provided with selector: %s', $newOption->selector);
+            throw new DuplicateSelectorException($message);
         }
         foreach ($this->optionMap as $option) {
             if ($option->name == $newOption->name || $option->label == $newOption->label) {
