@@ -1,18 +1,16 @@
-# Menu Selectors
+# <a name="menu-selectors">Menu Selectors</a>
 
-Selectors are used to compare user input with a selected menu option.  
+Selectors are used to compare user input with a selected menu option. When calling `Menu::select($selection)` or `Menu::promptForSelection()` the user input will be checked against the selectors.  
 In the render below you can see that `1`, `2`, and `3` are the selectors:
 ```
 1 Add User
 2 Delete User
 3 Quit
 ```
-When calling `Menu::select($selection)` or `Menu::promptForSelection()` the user input will be checked against the selectors
-  
-Selectors by default, are auto-generated integers starting with `1`. If you do not want to use the provided
-selectors, you will have to provide a selector for each option you add.
+Selectors, by default, are auto-generated integers starting with `1`. If you do not want to use the provided
+selectors, you will have to provide a your own for each option you add.
 
-### Working With Custom Selectors
+### Custom Menu Selectors
 ```php
 public function execute(InputInterface $input, OutputInterface $output)
 {
