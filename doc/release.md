@@ -6,6 +6,12 @@
 - ability to create and inject a custom incremental selector
 - ability to shuffle options
 
+## v1.0.0
+### Changes
+- symfony/console version has been upgraded to 4.2, the most recent production version.
+### Notes
+- this new 1.0.0 version is ready for production applications.
+
 ## v0.2.0
 ### Changes  
 - `Menu::selectFromUserInput()` has been renamed to `Menu::promptForSelection()`
